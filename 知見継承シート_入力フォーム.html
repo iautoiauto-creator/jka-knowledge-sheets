@@ -1,0 +1,782 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>業務知見シート｜入力フォーム</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#111111; --black-2:#1c1c1c;
+    --gold:#a8862e; --gold-dark:#8a6d1f; --gold-light:#c9a851; --gold-pale:#f5edd8;
+    --cream:#fdf8e8; --white:#ffffff; --bg:#f7f6f3;
+    --line:#d9d5cc; --line-dark:#b9b4a8;
+    --text:#222222; --text-sub:#666055; --red:#b03a2e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{
+    background:var(--bg); color:var(--text);
+    font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    font-size:14px; line-height:1.7; -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== システムヘッダー ===== */
+  .sys-header{
+    background:var(--black); color:var(--white);
+    padding:14px 32px; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  }
+  .sys-logo{
+    width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);
+    display:flex;align-items:center;justify-content:center;
+    color:var(--gold);font-weight:900;font-size:13px;font-style:italic;flex-shrink:0;
+  }
+  .sys-title{font-weight:700;font-size:16px;letter-spacing:.04em}
+  .sys-title small{display:block;font-weight:400;font-size:9.5px;color:var(--gold-light);letter-spacing:.22em;margin-top:1px}
+  .btn-area{margin-left:auto;display:flex;gap:8px;flex-wrap:wrap}
+  .btn{
+    font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.06em;
+    padding:8px 20px;cursor:pointer;border:1px solid var(--gold);
+    background:transparent;color:var(--gold-light);transition:.15s;
+  }
+  .btn:hover{background:rgba(201,168,81,.15)}
+  .btn.gold{background:var(--gold);color:var(--black)}
+  .btn.gold:hover{background:var(--gold-light)}
+  .btn.ghost{border-color:#666;color:#bbb}
+  .btn.ghost:hover{background:rgba(255,255,255,.08)}
+
+  .mode-bar{
+    background:var(--black-2);color:#ccc;font-size:12px;
+    padding:9px 32px;display:flex;gap:18px;align-items:center;flex-wrap:wrap;
+  }
+  .mode-bar .badge{background:var(--gold);color:var(--black);font-weight:700;font-size:11px;padding:3px 12px}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 32px 110px}
+
+  .page-title{border-left:5px solid var(--gold);padding-left:16px;margin-bottom:6px}
+  .page-title h1{font-size:22px;font-weight:900;letter-spacing:.03em;color:var(--black)}
+  .lead{font-size:12.5px;color:var(--text-sub);margin-bottom:6px}
+
+  .legend{
+    background:var(--gold-pale);border:1px solid var(--line);
+    font-size:12px;color:var(--text-sub);padding:8px 16px;margin-top:14px;
+  }
+
+  /* ===== セクション ===== */
+  section{margin-top:40px}
+  .sec-head{
+    background:var(--black);color:var(--white);padding:10px 18px;
+    display:flex;align-items:baseline;gap:12px;
+  }
+  .sec-num{color:var(--gold-light);font-weight:900;font-size:15px}
+  .sec-head h2{font-size:15px;font-weight:700;letter-spacing:.05em}
+  .sec-note{font-size:11px;color:var(--gold-light);margin-left:auto}
+  .sec-body{background:var(--white);border:1px solid var(--line);border-top:none;padding:22px}
+
+  /* ===== フォーム部品 ===== */
+  label.f-label{
+    display:block;font-size:12.5px;font-weight:700;color:var(--black);margin-bottom:4px;
+  }
+  label.f-label .req{color:var(--red);font-size:11px;margin-left:6px}
+  label.f-label .hint{font-weight:400;color:var(--text-sub);font-size:11px;margin-left:8px}
+  input[type=text],input[type=date],select,textarea{
+    width:100%;font-family:inherit;font-size:13.5px;color:var(--text);
+    background:var(--cream);border:1px solid var(--line-dark);
+    padding:8px 12px;line-height:1.6;
+  }
+  textarea{resize:vertical;min-height:64px}
+  input:focus,select:focus,textarea:focus{
+    outline:2px solid var(--gold);outline-offset:-1px;background:var(--white);
+  }
+  ::placeholder{color:#b5ae9d;font-size:12.5px}
+  .grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+  .grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px}
+  .field{margin-bottom:16px}
+
+  .sub-label{
+    font-size:13px;font-weight:700;color:var(--black);
+    border-left:4px solid var(--gold);padding-left:10px;margin:20px 0 12px;
+  }
+  .sub-label:first-child{margin-top:0}
+
+  /* ===== 動的行カード ===== */
+  .row-card{
+    border:1px solid var(--line);border-left:4px solid var(--gold);
+    background:#fbfaf7;padding:14px 16px;margin-bottom:12px;position:relative;
+  }
+  .row-card .row-no{
+    position:absolute;top:-1px;left:-4px;
+    background:var(--gold);color:var(--black);font-weight:900;font-size:12px;
+    padding:2px 10px;
+  }
+  .row-card .del{
+    position:absolute;top:8px;right:10px;
+    font-size:11px;color:var(--text-sub);cursor:pointer;border:none;background:none;
+    font-family:inherit;text-decoration:underline;
+  }
+  .row-card .del:hover{color:var(--red)}
+  .row-card .field:last-child{margin-bottom:0}
+  .row-inner{padding-top:14px}
+  .add-row{
+    display:block;width:100%;padding:9px;font-family:inherit;font-size:13px;font-weight:700;
+    color:var(--gold-dark);background:var(--gold-pale);
+    border:1px dashed var(--gold);cursor:pointer;letter-spacing:.06em;
+  }
+  .add-row:hover{background:#efe3c2}
+
+  /* ===== 暗黙知の強調 ===== */
+  #s5 .sec-body{background:var(--cream);border:2px solid var(--gold)}
+  #s5 .row-card{background:var(--white)}
+
+  /* ===== フッター固定バー ===== */
+  .action-bar{
+    position:fixed;bottom:0;left:0;right:0;z-index:20;
+    background:var(--black);padding:12px 32px;
+    display:flex;gap:10px;align-items:center;flex-wrap:wrap;
+  }
+  .action-bar .note{font-size:11.5px;color:#aaa;margin-right:auto}
+
+  @media (max-width:720px){
+    .sys-header,.mode-bar,.action-bar{padding-left:16px;padding-right:16px}
+    .wrap{padding:20px 16px 130px}
+    .grid2,.grid3{grid-template-columns:1fr}
+  }
+</style>
+</head>
+<body>
+
+<div class="sys-header">
+  <div class="sys-logo">JKA</div>
+  <div class="sys-title">経営企画部 知見継承データベース
+    <small>KEIEI-KIKAKU KNOWLEDGE TRANSFER DATABASE</small>
+  </div>
+  <div class="btn-area">
+    <button class="btn ghost" onclick="loadSample()">サンプル読込</button>
+    <button class="btn" onclick="document.getElementById('jsonFile').click()">下書きを開く</button>
+    <input type="file" id="jsonFile" accept=".json" style="display:none" onchange="loadJson(this)">
+  </div>
+</div>
+
+<div class="mode-bar">
+  <span class="badge">入力フォーム</span>
+  <span>新規シート作成・既存シートの下書き編集</span>
+</div>
+
+<div class="wrap">
+
+<div class="page-title"><h1>業務知見シート 入力フォーム</h1></div>
+<p class="lead">Excel「業務知見シート」の8項目構成に準拠しています。入力後、最下部の「閲覧用シートを生成」を押すと、黒×ゴールドの閲覧用HTMLが自動生成されます。途中保存は「下書き保存（JSON）」をご利用ください。</p>
+
+<div class="legend">
+  記入のコツ：セクション2は「なぜこの業務があるのか」を後任が読んで腹落ちする粒度で。セクション5（暗黙知）が本DBの中核です。「マニュアルには書けないが、知らないと失敗すること」を優先して記入してください。
+</div>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">1.</span><h2>基本情報</h2></div>
+  <div class="sec-body">
+    <div class="field">
+      <label class="f-label">業務名・会議名<span class="req">必須</span></label>
+      <input type="text" id="f_name" placeholder="例：競の会（公営競技会長懇）事務局対応　＃第143回（2024年11月回）">
+    </div>
+    <div class="grid3">
+      <div class="field">
+        <label class="f-label">案件No</label>
+        <input type="text" id="f_no" placeholder="例：01">
+      </div>
+      <div class="field">
+        <label class="f-label">係</label>
+        <select id="f_kakari">
+          <option value="">選択してください</option>
+          <option>部</option><option>振調</option><option>—</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="f-label">区分</label>
+        <select id="f_kubun">
+          <option value="">選択してください</option>
+          <option>定常業務</option><option>プロジェクト</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid3">
+      <div class="field">
+        <label class="f-label">ステータス</label>
+        <select id="f_status">
+          <option value="">選択してください</option>
+          <option>定常</option><option>進行中</option><option>完了</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="f-label">工数（係数）<span class="hint">1〜3</span></label>
+        <select id="f_kosu">
+          <option value="">選択</option><option>1</option><option>2</option><option>3</option>
+        </select>
+      </div>
+      <div class="field">
+        <label class="f-label">発生頻度・時期</label>
+        <input type="text" id="f_freq" placeholder="例：年1回・11月頃">
+      </div>
+    </div>
+    <div class="field">
+      <label class="f-label">関連ファイル（Gドライブパス）</label>
+      <input type="text" id="f_gdrive" placeholder="例：G:\共有ドライブ\00_D100_経営企画部\...">
+    </div>
+    <div class="grid3">
+      <div class="field">
+        <label class="f-label">更新責任者<span class="req">必須</span></label>
+        <input type="text" id="f_owner" placeholder="例：白石">
+      </div>
+      <div class="field">
+        <label class="f-label">最終更新日</label>
+        <input type="date" id="f_updated">
+      </div>
+      <div class="field">
+        <label class="f-label">次マイルストーン・期限</label>
+        <input type="text" id="f_milestone" placeholder="例：2025年9月頃に会場仮予約">
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">2.</span><h2>目的と背景（Why）</h2><span class="sec-note">※部次長レベルで特に重要</span></div>
+  <div class="sec-body">
+    <div class="field">
+      <label class="f-label">業務の目的<span class="hint">「この業務は何のためにあるのか」という本質的な意義</span></label>
+      <textarea id="f_purpose" placeholder="例：JRA・NAR・JKAの会長・理事長クラスが年1回懇談し、公営競技全体の情報共有・関係強化を行う場の事務局を担当する。"></textarea>
+    </div>
+    <div class="field">
+      <label class="f-label">発足の経緯・背景<span class="hint">「なぜ現在の形式・メンバーで行われているのか」</span></label>
+      <textarea id="f_history" placeholder="例：木戸会長の下命により「会長懇＋部長懇」の形式で開催されることになった。"></textarea>
+    </div>
+    <div class="field">
+      <label class="f-label">中計・方針との関連</label>
+      <textarea id="f_chukei" placeholder="例：他団体との関係強化を通じた公営競技全体の振興に貢献。"></textarea>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">3.</span><h2>体制・関係者（Who）</h2></div>
+  <div class="sec-body">
+    <div class="sub-label">社内体制</div>
+    <div class="grid2">
+      <div class="field">
+        <label class="f-label">統括<span class="hint">部次長レベルの意思決定者・最終責任者</span></label>
+        <input type="text" id="f_tokatsu" placeholder="例：和泉（部長）">
+      </div>
+      <div class="field">
+        <label class="f-label">管理（□）<span class="hint">進捗・品質管理を担う課長クラス</span></label>
+        <input type="text" id="f_kanri" placeholder="例：片桐（課長）">
+      </div>
+      <div class="field">
+        <label class="f-label">主担当（◎）<span class="hint">実務の中心担当者</span></label>
+        <input type="text" id="f_shutan" placeholder="例：白石（次長）">
+      </div>
+      <div class="field">
+        <label class="f-label">主担補佐（○*）<span class="hint">主担当のバックアップ</span></label>
+        <input type="text" id="f_hosa" placeholder="例：江口（次長）、中村（課長）">
+      </div>
+      <div class="field">
+        <label class="f-label">副担当（○）<span class="hint">サポート担当</span></label>
+        <input type="text" id="f_fukutan" placeholder="">
+      </div>
+    </div>
+
+    <div class="sub-label">社外・関係者</div>
+    <div id="list_gaibu"></div>
+    <button class="add-row" onclick="addGaibu()">＋ 関係者を追加</button>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">4.</span><h2>対応の流れ（When / How）</h2><span class="sec-note">※担当者レベルで特に重要</span></div>
+  <div class="sec-body">
+    <div id="list_flow"></div>
+    <button class="add-row" onclick="addFlow()">＋ ステップを追加</button>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">5.</span><h2>知見・ノウハウ（暗黙知）</h2><span class="sec-note">★ここが最重要：マニュアルに書かれない実務の勘所</span></div>
+  <div class="sec-body">
+    <div id="list_knowhow"></div>
+    <button class="add-row" onclick="addKnowhow()">＋ 知見を追加</button>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">6.</span><h2>費用・予算</h2></div>
+  <div class="sec-body">
+    <div class="field">
+      <label class="f-label">費用の目安<span class="hint">過去の実績値を記載しておくと次回の予算取りに役立ちます</span></label>
+      <textarea id="f_cost" placeholder="例：JKA負担分 約276,100円（2024年実績）"></textarea>
+    </div>
+    <div class="field">
+      <label class="f-label">決済方法・精算フロー</label>
+      <textarea id="f_payment" placeholder="例：当日に会場へ事前支払い→領収書を事前受領→各団体から現金回収→領収書を渡す"></textarea>
+    </div>
+    <div class="field">
+      <label class="f-label">予算科目・申請方法</label>
+      <input type="text" id="f_budget" placeholder="例：(共)調査研究会議費(9-1)">
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">7.</span><h2>次回への申し送り・未決事項</h2><span class="sec-note">★毎回更新すること</span></div>
+  <div class="sec-body">
+    <div id="list_pending"></div>
+    <button class="add-row" onclick="addPending()">＋ 申し送りを追加</button>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="s8">
+  <div class="sec-head"><span class="sec-num">8.</span><h2>更新履歴</h2></div>
+  <div class="sec-body">
+    <p style="font-size:12.5px;color:var(--text-sub);margin-bottom:12px">※「閲覧用シートを生成」時に、下記の記入者名で当日日付の履歴が自動追記されます。過去の履歴を引き継ぐ場合はここに入力してください。</p>
+    <div class="field" style="max-width:360px">
+      <label class="f-label">今回の記入者<span class="req">必須</span></label>
+      <input type="text" id="f_editor" placeholder="例：白石">
+    </div>
+    <div id="list_history"></div>
+    <button class="add-row" onclick="addHistory()">＋ 過去の履歴を追加</button>
+  </div>
+</section>
+
+</div>
+
+<!-- 固定アクションバー -->
+<div class="action-bar">
+  <span class="note">入力内容はこのページを閉じると消えます。作業を中断する場合は必ず「下書き保存」を。</span>
+  <button class="btn" onclick="saveJson()">下書き保存（JSON）</button>
+  <button class="btn gold" onclick="generateSheet()">閲覧用シートを生成（HTML）</button>
+</div>
+
+<script>
+/* =========================================================
+   動的行の生成
+========================================================= */
+function esc(s){return String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;')}
+function nl2br(s){return esc(s).replace(/\n/g,'<br>')}
+
+function rowCard(inner){
+  const d=document.createElement('div');
+  d.className='row-card';
+  d.innerHTML='<span class="row-no"></span><button class="del" onclick="this.parentElement.remove();renum()">削除</button><div class="row-inner">'+inner+'</div>';
+  return d;
+}
+function renum(){
+  ['list_gaibu','list_flow','list_knowhow','list_pending','list_history'].forEach(id=>{
+    document.querySelectorAll('#'+id+' .row-no').forEach((el,i)=>el.textContent='No.'+(i+1));
+  });
+}
+
+function addGaibu(v={}){
+  const c=rowCard(`
+    <div class="grid3">
+      <div class="field"><label class="f-label">組織・団体</label><input type="text" class="g_org" value="${esc(v.org)}" placeholder="例：JRA（日本中央競馬会）"></div>
+      <div class="field"><label class="f-label">役職・氏名</label><input type="text" class="g_pos" value="${esc(v.pos)}" placeholder="例：理事長・部長"></div>
+      <div class="field"><label class="f-label">役割・関係性</label><input type="text" class="g_role" value="${esc(v.role)}" placeholder="例：懇談会参加者（主賓）"></div>
+    </div>
+    <div class="field"><label class="f-label">備考（連絡先等）</label><input type="text" class="g_memo" value="${esc(v.memo)}" placeholder="例：社用車・運転手あり"></div>`);
+  document.getElementById('list_gaibu').appendChild(c);renum();
+}
+function addFlow(v={}){
+  const c=rowCard(`
+    <div class="grid2">
+      <div class="field"><label class="f-label">時期・タイミング</label><input type="text" class="fl_time" value="${esc(v.time)}" placeholder="例：9月〜10月"></div>
+      <div class="field"><label class="f-label">アクション（何をするか）</label><input type="text" class="fl_act" value="${esc(v.act)}" placeholder="例：店舗選定・視察"></div>
+    </div>
+    <div class="field"><label class="f-label">要点・IN/OUT・確認先</label><textarea class="fl_point" placeholder="具体的な手順・判断基準・確認先">${esc(v.point)}</textarea></div>
+    <div class="field"><label class="f-label">落とし穴・注意点</label><textarea class="fl_warn" placeholder="知らないとハマるポイント">${esc(v.warn)}</textarea></div>`);
+  document.getElementById('list_flow').appendChild(c);renum();
+}
+function addKnowhow(v={}){
+  const c=rowCard(`
+    <div class="grid2">
+      <div class="field"><label class="f-label">分類</label><input type="text" class="kh_cat" value="${esc(v.cat)}" placeholder="例：幹事順／費用管理／関係者情報"></div>
+      <div class="field"><label class="f-label">項目</label><input type="text" class="kh_title" value="${esc(v.title)}" placeholder="例：会場選定の基準"></div>
+    </div>
+    <div class="field"><label class="f-label">内容（なぜ・どうした・コツ）</label><textarea class="kh_body" placeholder="実際に何が起きて、どう対処したか">${esc(v.body)}</textarea></div>
+    <div class="field"><label class="f-label">次担当への示唆・引継ポイント</label><textarea class="kh_handoff" placeholder="後任に一言で伝えるなら何か">${esc(v.handoff)}</textarea></div>`);
+  document.getElementById('list_knowhow').appendChild(c);renum();
+}
+function addPending(v={}){
+  const c=rowCard(`
+    <div class="grid2">
+      <div class="field"><label class="f-label">項目</label><input type="text" class="p_title" value="${esc(v.title)}" placeholder="例：次回開催時期"></div>
+      <div class="field"><label class="f-label">ステータス</label>
+        <select class="p_status">
+          <option value="">選択</option>
+          <option ${v.status==='確認中'?'selected':''}>確認中</option>
+          <option ${v.status==='継続検討'?'selected':''}>継続検討</option>
+          <option ${v.status==='要対応'?'selected':''}>要対応</option>
+          <option ${v.status==='完了'?'selected':''}>完了</option>
+        </select></div>
+    </div>
+    <div class="field"><label class="f-label">内容・現状</label><textarea class="p_body">${esc(v.body)}</textarea></div>
+    <div class="field"><label class="f-label">期限・次アクション</label><input type="text" class="p_action" value="${esc(v.action)}" placeholder="例：2025年1月末までにJRAへ確認"></div>`);
+  document.getElementById('list_pending').appendChild(c);renum();
+}
+function addHistory(v={}){
+  const c=rowCard(`
+    <div class="grid3">
+      <div class="field"><label class="f-label">日付</label><input type="date" class="h_date" value="${esc(v.date)}"></div>
+      <div class="field"><label class="f-label">記入者</label><input type="text" class="h_who" value="${esc(v.who)}"></div>
+      <div class="field"><label class="f-label">更新内容</label><input type="text" class="h_note" value="${esc(v.note)}"></div>
+    </div>`);
+  document.getElementById('list_history').appendChild(c);renum();
+}
+
+/* 初期表示：各リスト1行ずつ */
+addGaibu();addFlow();addKnowhow();addPending();
+
+/* =========================================================
+   データ収集・下書き（JSON）
+========================================================= */
+function collect(){
+  const val=id=>document.getElementById(id).value.trim();
+  const rows=(listId,map)=>Array.from(document.querySelectorAll('#'+listId+' .row-card')).map(map)
+    .filter(o=>Object.values(o).some(x=>x!==''));
+  const gv=(card,cls)=>card.querySelector('.'+cls)?.value.trim()??'';
+  return {
+    meta:{format:'jka-knowledge-sheet',version:1},
+    no:val('f_no'),name:val('f_name'),kakari:val('f_kakari'),kubun:val('f_kubun'),
+    status:val('f_status'),kosu:val('f_kosu'),freq:val('f_freq'),gdrive:val('f_gdrive'),
+    owner:val('f_owner'),updated:val('f_updated'),milestone:val('f_milestone'),
+    purpose:val('f_purpose'),history:val('f_history'),chukei:val('f_chukei'),
+    tokatsu:val('f_tokatsu'),kanri:val('f_kanri'),shutan:val('f_shutan'),hosa:val('f_hosa'),fukutan:val('f_fukutan'),
+    gaibu:rows('list_gaibu',c=>({org:gv(c,'g_org'),pos:gv(c,'g_pos'),role:gv(c,'g_role'),memo:gv(c,'g_memo')})),
+    flow:rows('list_flow',c=>({time:gv(c,'fl_time'),act:gv(c,'fl_act'),point:gv(c,'fl_point'),warn:gv(c,'fl_warn')})),
+    knowhow:rows('list_knowhow',c=>({cat:gv(c,'kh_cat'),title:gv(c,'kh_title'),body:gv(c,'kh_body'),handoff:gv(c,'kh_handoff')})),
+    cost:val('f_cost'),payment:val('f_payment'),budget:val('f_budget'),
+    pending:rows('list_pending',c=>({title:gv(c,'p_title'),status:gv(c,'p_status'),body:gv(c,'p_body'),action:gv(c,'p_action')})),
+    editor:val('f_editor'),
+    histories:rows('list_history',c=>({date:gv(c,'h_date'),who:gv(c,'h_who'),note:gv(c,'h_note')}))
+  };
+}
+
+function restore(d){
+  const set=(id,v)=>{document.getElementById(id).value=v??''};
+  set('f_no',d.no);set('f_name',d.name);set('f_kakari',d.kakari);set('f_kubun',d.kubun);
+  set('f_status',d.status);set('f_kosu',d.kosu);set('f_freq',d.freq);set('f_gdrive',d.gdrive);
+  set('f_owner',d.owner);set('f_updated',d.updated);set('f_milestone',d.milestone);
+  set('f_purpose',d.purpose);set('f_history',d.history);set('f_chukei',d.chukei);
+  set('f_tokatsu',d.tokatsu);set('f_kanri',d.kanri);set('f_shutan',d.shutan);set('f_hosa',d.hosa);set('f_fukutan',d.fukutan);
+  set('f_cost',d.cost);set('f_payment',d.payment);set('f_budget',d.budget);set('f_editor',d.editor);
+  ['list_gaibu','list_flow','list_knowhow','list_pending','list_history'].forEach(id=>document.getElementById(id).innerHTML='');
+  (d.gaibu?.length?d.gaibu:[{}]).forEach(addGaibu);
+  (d.flow?.length?d.flow:[{}]).forEach(addFlow);
+  (d.knowhow?.length?d.knowhow:[{}]).forEach(addKnowhow);
+  (d.pending?.length?d.pending:[{}]).forEach(addPending);
+  (d.histories||[]).forEach(addHistory);
+  renum();
+}
+
+function saveJson(){
+  const d=collect();
+  const name=(d.no?d.no+'_':'')+(d.name?d.name.slice(0,20):'無題');
+  download(JSON.stringify(d,null,2),'下書き_'+name+'.json','application/json');
+  alert('下書きJSONを保存しました。再開時はヘッダーの「下書きを開く」から読み込めます。');
+}
+function loadJson(input){
+  const f=input.files[0];if(!f)return;
+  const r=new FileReader();
+  r.onload=()=>{try{restore(JSON.parse(r.result));alert('下書きを読み込みました。')}catch(e){alert('JSONの読み込みに失敗しました：'+e.message)}};
+  r.readAsText(f);input.value='';
+}
+function download(content,filename,type){
+  const blob=new Blob([content],{type:type+';charset=utf-8'});
+  const a=document.createElement('a');
+  a.href=URL.createObjectURL(blob);a.download=filename;a.click();
+  URL.revokeObjectURL(a.href);
+}
+
+/* =========================================================
+   閲覧用HTML生成
+========================================================= */
+function today(){const d=new Date();return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')}
+function fmtDate(s){return s?s.replaceAll('-','/'):''}
+
+function generateSheet(){
+  const d=collect();
+  if(!d.name){alert('「業務名・会議名」は必須です。');document.getElementById('f_name').focus();return}
+  if(!d.editor){alert('「今回の記入者」（セクション8）は必須です。');document.getElementById('f_editor').focus();return}
+
+  const stCls=s=>s==='確認中'?'check':(s==='要対応'?'todo':'cont');
+  const emptyMark='<span class="empty">（記入）</span>';
+  const v=s=>s?nl2br(s):emptyMark;
+  const updatedDisp=d.updated?fmtDate(d.updated):today();
+
+  const gaibuRows=d.gaibu.map((g,i)=>`<tr><td class="no">${i+1}</td><td>${nl2br(g.org)}</td><td>${nl2br(g.pos)}</td><td>${nl2br(g.role)}</td><td>${nl2br(g.memo)}</td></tr>`).join('')||'<tr><td class="no">-</td><td colspan="4">'+emptyMark+'</td></tr>';
+  const flowRows=d.flow.map((f,i)=>`<tr><td class="no">${i+1}</td><td class="timing">${nl2br(f.time)}</td><td>${nl2br(f.act)}</td><td>${nl2br(f.point)}</td><td class="warn">${nl2br(f.warn)}</td></tr>`).join('')||'<tr><td class="no">-</td><td colspan="4">'+emptyMark+'</td></tr>';
+  const khItems=d.knowhow.map((k,i)=>`
+    <div class="kh-item">
+      <div><div class="kh-tag">${String(i+1).padStart(2,'0')} ／ ${nl2br(k.cat)||'—'}</div><div class="kh-title">${nl2br(k.title)}</div></div>
+      <div class="kh-body"><p>${nl2br(k.body)}</p>${k.handoff?'<div class="handoff">'+nl2br(k.handoff)+'</div>':''}</div>
+    </div>`).join('')||'<p>'+emptyMark+'</p>';
+  const pendRows=d.pending.map((p,i)=>`<tr><td class="no">${i+1}</td><td>${nl2br(p.title)}</td><td>${nl2br(p.body)}</td><td><span class="st ${stCls(p.status)}">${nl2br(p.status)||'—'}</span></td><td>${nl2br(p.action)}</td></tr>`).join('')||'<tr><td class="no">-</td><td colspan="4">'+emptyMark+'</td></tr>';
+  const histRows=d.histories.map(h=>`<tr><td class="timing">${fmtDate(h.date)}</td><td>${nl2br(h.who)}</td><td>${nl2br(h.note)}</td></tr>`).join('')
+    +`<tr><td class="timing">${today()}</td><td>${nl2br(d.editor)}</td><td>入力フォームより作成・更新</td></tr>`;
+
+  const caseNo=d.no?String(d.no).padStart(2,'0'):'—';
+  const html=viewerTemplate({
+    d,caseNo,updatedDisp,gaibuRows,flowRows,khItems,pendRows,histRows,vfun:v
+  });
+  const fname='知見継承シート_'+(d.no?String(d.no).padStart(2,'0')+'_':'')+d.name.split('（')[0].slice(0,15)+'.html';
+  download(html,fname,'text/html');
+  alert('閲覧用シートを生成しました。\nGドライブの所定フォルダに保存してください。');
+}
+
+/* 閲覧用テンプレート（閲覧ページと同一デザイン・更新導線つき） */
+function viewerTemplate(p){
+  const {d,caseNo,updatedDisp,gaibuRows,flowRows,khItems,pendRows,histRows,vfun:v}=p;
+  return `<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>業務知見シート｜${esc(caseNo)} ${esc(d.name)}</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{--black:#111;--black-2:#1c1c1c;--gold:#a8862e;--gold-dark:#8a6d1f;--gold-light:#c9a851;--gold-pale:#f5edd8;--cream:#fdf8e8;--white:#fff;--bg:#f7f6f3;--line:#d9d5cc;--line-dark:#b9b4a8;--text:#222;--text-sub:#666055;--red:#b03a2e}
+*{margin:0;padding:0;box-sizing:border-box}html{scroll-behavior:smooth}
+body{background:var(--bg);color:var(--text);font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;font-size:14px;line-height:1.75;-webkit-font-smoothing:antialiased}
+.sys-header{background:var(--black);color:var(--white);padding:14px 32px;display:flex;align-items:center;gap:14px}
+.sys-logo{width:44px;height:44px;border-radius:50%;border:2px solid var(--gold);display:flex;align-items:center;justify-content:center;color:var(--gold);font-weight:900;font-size:13px;font-style:italic;flex-shrink:0}
+.sys-title{font-weight:700;font-size:16px;letter-spacing:.04em}
+.sys-title small{display:block;font-weight:400;font-size:9.5px;color:var(--gold-light);letter-spacing:.22em;margin-top:1px}
+.sys-right{margin-left:auto;font-size:12px;color:#ccc}.sys-right b{color:var(--white);font-weight:500}
+.btn-area{display:flex;gap:8px;margin-left:18px}
+.btn{font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;padding:8px 22px;cursor:pointer;border:1px solid var(--gold);background:transparent;color:var(--gold-light);transition:.15s}
+.btn:hover{background:rgba(201,168,81,.15)}.btn.gold{background:var(--gold);color:var(--black)}.btn.gold:hover{background:var(--gold-light)}.btn.ghost{border-color:#666;color:#bbb}.btn.ghost:hover{background:rgba(255,255,255,.08)}
+nav.toc{position:sticky;top:0;z-index:10;background:var(--black-2);padding:0 32px;display:flex;overflow-x:auto;white-space:nowrap}
+nav.toc a{color:#bbb;text-decoration:none;font-size:12.5px;font-weight:500;padding:11px 16px;letter-spacing:.04em;border-bottom:3px solid transparent}
+nav.toc a:hover{color:var(--white);background:rgba(255,255,255,.06);border-bottom-color:var(--gold)}nav.toc a.star{color:var(--gold-light)}
+.info-bar{background:var(--black);padding:10px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:#ccc}
+.badge{background:var(--gold);color:var(--black);font-weight:700;font-size:11px;padding:3px 12px;letter-spacing:.06em}.info-bar b{color:var(--white);font-weight:500}
+.edit-banner{display:none;background:var(--gold);color:var(--black);font-size:12.5px;font-weight:700;letter-spacing:.06em;padding:8px 32px}
+body.editing .edit-banner{display:block}
+.wrap{max-width:1120px;margin:0 auto;padding:28px 32px 90px}
+.crumb{font-size:12px;color:var(--text-sub);margin-bottom:18px}.crumb span{color:var(--gold-dark)}
+.page-title{border-left:5px solid var(--gold);padding-left:16px;margin-bottom:8px}
+.page-title h1{font-size:24px;font-weight:900;letter-spacing:.03em;color:var(--black);display:flex;align-items:baseline;gap:12px;flex-wrap:wrap}
+.case-no{font-size:12px;font-weight:700;color:var(--gold-dark);letter-spacing:.14em;margin-bottom:4px}
+.status-row{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+.chip{font-size:12px;padding:4px 14px;background:var(--white);border:1px solid var(--line);color:var(--text-sub)}
+.chip b{color:var(--text);font-weight:700;margin-left:6px}.chip.gold{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:700}
+.legend{background:var(--gold-pale);border:1px solid var(--line);font-size:12px;color:var(--text-sub);padding:8px 16px;margin-top:16px}
+.legend .sw{display:inline-block;width:11px;height:11px;vertical-align:-1px;margin:0 4px 0 12px;border:1px solid var(--line-dark)}.sw.cream{background:var(--cream)}.sw.white{background:var(--white)}
+section{margin-top:44px}
+.sec-head{background:var(--black);color:var(--white);padding:10px 18px;display:flex;align-items:baseline;gap:12px}
+.sec-num{color:var(--gold-light);font-weight:900;font-size:15px}.sec-head h2{font-size:15px;font-weight:700;letter-spacing:.05em}
+.sec-note{font-size:11px;color:var(--gold-light);margin-left:auto;letter-spacing:.04em}
+.sec-body{background:var(--white);border:1px solid var(--line);border-top:none;padding:22px}
+.kv{display:grid;grid-template-columns:200px 1fr;border:1px solid var(--line)}
+.kv>div{padding:11px 16px;border-bottom:1px solid var(--line);font-size:13.5px;background:var(--white)}
+.kv>div:nth-last-child(-n+2){border-bottom:none}
+.kv .k{background:var(--gold-pale);color:var(--text);font-weight:700;font-size:12.5px;border-right:1px solid var(--line)}
+.kv .v b{color:var(--gold-dark);font-weight:700}.kv .v .path{font-size:12px;color:var(--text-sub);word-break:break-all}
+.kv .empty,.empty{color:var(--text-sub);background:var(--cream);display:inline-block;padding:1px 10px;font-size:12px;border:1px dashed var(--line-dark)}
+table{width:100%;border-collapse:collapse;font-size:13px;background:var(--white)}
+thead th{text-align:left;padding:9px 12px;font-weight:700;font-size:12px;color:var(--gold-light);letter-spacing:.06em;background:var(--black);white-space:nowrap;border:1px solid var(--black)}
+tbody td{padding:11px 12px;border:1px solid var(--line);vertical-align:top}
+tbody tr:nth-child(even) td{background:#fbfaf7}
+td.no{color:var(--gold-dark);font-weight:900;font-size:14px;width:36px;text-align:center;background:var(--gold-pale)!important}
+td.timing{white-space:nowrap;font-weight:700;width:110px}
+td.warn{color:var(--red);background:var(--cream)!important;font-size:12.5px}
+.st{font-size:11px;font-weight:700;padding:2px 10px;white-space:nowrap;display:inline-block}
+.st.check{background:var(--gold);color:var(--black)}.st.cont{background:#e7e4dc;color:var(--text-sub)}.st.todo{background:var(--red);color:var(--white)}
+.org{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:24px}
+.org-card{background:var(--white);border:1px solid var(--line);border-top:3px solid var(--gold);padding:12px 14px}
+.org-card .role{font-size:11px;font-weight:700;color:var(--gold-dark);letter-spacing:.08em;margin-bottom:3px}
+.org-card .name{font-size:13.5px;font-weight:700;color:var(--black)}
+.org-card .desc{font-size:11px;color:var(--text-sub);margin-top:5px;line-height:1.5}
+.sub-label{font-size:13px;font-weight:700;color:var(--black);border-left:4px solid var(--gold);padding-left:10px;margin:0 0 12px}
+.knowhow{border:2px solid var(--gold);background:var(--cream);padding:22px}
+.knowhow-lead{font-size:12.5px;font-weight:700;color:var(--gold-dark);letter-spacing:.12em;margin-bottom:18px}
+.kh-item{display:grid;grid-template-columns:170px 1fr;gap:0 20px;padding:16px 0;border-top:1px solid var(--line-dark)}
+.kh-item:first-of-type{border-top:none;padding-top:0}
+.kh-tag{font-size:11px;font-weight:700;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:3px}
+.kh-title{font-weight:900;font-size:14.5px;line-height:1.5;color:var(--black)}
+.kh-body p{font-size:13.5px}
+.kh-body .handoff{margin-top:8px;padding:10px 14px;background:var(--white);border:1px solid var(--line);border-left:4px solid var(--gold);font-size:13px}
+.kh-body .handoff::before{content:"次担当への引継ポイント";display:block;font-size:10.5px;font-weight:700;color:var(--gold-dark);letter-spacing:.12em;margin-bottom:3px}
+.footer-note{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);font-size:11px;color:var(--text-sub);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+body.editing .kv .v,body.editing tbody td:not(.no),body.editing .kh-body p,body.editing .kh-body .handoff,body.editing .org-card .name{outline:2px dashed var(--gold);outline-offset:-2px;background:var(--cream)!important;cursor:text}
+body.editing .kv .v:focus,body.editing tbody td:focus,body.editing .kh-body p:focus,body.editing .kh-body .handoff:focus,body.editing .org-card .name:focus{outline:2px solid var(--gold);background:var(--white)!important}
+@media(max-width:720px){.sys-header,.info-bar,nav.toc{padding-left:16px;padding-right:16px}.wrap{padding:20px 16px 64px}.page-title h1{font-size:19px}.kv{grid-template-columns:1fr}.kv .k{border-right:none}.kh-item{grid-template-columns:1fr;gap:6px}}
+@media print{nav.toc{display:none}body{background:#fff}section{break-inside:avoid-page}}
+</style>
+</head>
+<body>
+<div class="sys-header">
+  <div class="sys-logo">JKA</div>
+  <div class="sys-title">経営企画部 知見継承データベース<small>KEIEI-KIKAKU KNOWLEDGE TRANSFER DATABASE</small></div>
+  <div class="sys-right"><b>${nl2br(d.editor)}</b> さん</div>
+  <div class="btn-area" id="btnArea"><button class="btn gold" onclick="startEdit()">更新</button></div>
+</div>
+<nav class="toc">
+  <a href="#s1">1. 基本情報</a><a href="#s2">2. 目的と背景</a><a href="#s3">3. 体制・関係者</a><a href="#s4">4. 対応の流れ</a><a href="#s5" class="star">5. 知見・ノウハウ ★</a><a href="#s6">6. 費用・予算</a><a href="#s7">7. 申し送り</a><a href="#s8">8. 更新履歴</a>
+</nav>
+<div class="info-bar">
+  <span class="badge">${nl2br(d.status)||'—'}</span>
+  <span>案件No <b>${esc(caseNo)}</b></span>
+  <span>区分 <b>${nl2br(d.kubun)||'—'}</b></span>
+  <span>最終更新 <b id="lastUpdated">${esc(updatedDisp.replaceAll('/','-'))}</b></span>
+</div>
+<div class="edit-banner">✎ 編集モード：破線枠の欄をクリックして直接書き換えられます。完了したら右上の「変更を保存」を押してください。</div>
+<div class="wrap">
+<div class="crumb">ホーム　›　案件一覧　›　<span>${esc(caseNo)}_${esc(d.name.split('（')[0].slice(0,12))}</span></div>
+<div class="case-no">CASE ${esc(caseNo)} ／ ${nl2br(d.kubun)||'—'}</div>
+<div class="page-title"><h1>${nl2br(d.name)}</h1></div>
+<div class="status-row">
+  <span class="chip gold">ステータス：${nl2br(d.status)||'—'}</span>
+  <span class="chip">係<b>${nl2br(d.kakari)||'—'}</b></span>
+  <span class="chip">工数係数<b>${nl2br(d.kosu)||'—'}</b></span>
+  <span class="chip">更新責任者<b>${nl2br(d.owner)||'—'}</b></span>
+</div>
+<div class="legend">凡例：<span class="sw cream"></span>記入・要更新欄　<span class="sw white"></span>確定情報欄　　★＝マニュアルに書かれない実務の勘所（本DBの中核）</div>
+
+<section id="s1"><div class="sec-head"><span class="sec-num">1.</span><h2>基本情報</h2></div><div class="sec-body">
+<div class="kv">
+<div class="k">業務名・会議名</div><div class="v">${nl2br(d.name)}</div>
+<div class="k">係</div><div class="v">${v(d.kakari)}</div>
+<div class="k">区分</div><div class="v">${v(d.kubun)}</div>
+<div class="k">ステータス</div><div class="v"><b>${nl2br(d.status)||''}</b>${d.status?'':'<span class="empty">（記入）</span>'}</div>
+<div class="k">発生頻度・時期</div><div class="v">${v(d.freq)}</div>
+<div class="k">工数（係数）</div><div class="v">${d.kosu?nl2br(d.kosu)+'（1〜3の係数）':'<span class="empty">（記入）</span>'}</div>
+<div class="k">関連ファイル</div><div class="v">${d.gdrive?'<span class="path">'+nl2br(d.gdrive)+'</span>':'<span class="empty">（記入）</span>'}</div>
+<div class="k">更新責任者</div><div class="v">${v(d.owner)}</div>
+<div class="k">最終更新日</div><div class="v">${esc(updatedDisp)}</div>
+<div class="k">次マイルストーン・期限</div><div class="v">${v(d.milestone)}</div>
+</div></div></section>
+
+<section id="s2"><div class="sec-head"><span class="sec-num">2.</span><h2>目的と背景（Why）</h2><span class="sec-note">※部次長レベルで特に重要</span></div><div class="sec-body">
+<div class="kv">
+<div class="k">業務の目的</div><div class="v">${v(d.purpose)}</div>
+<div class="k">発足の経緯・背景</div><div class="v">${v(d.history)}</div>
+<div class="k">中計・方針との関連</div><div class="v">${v(d.chukei)}</div>
+</div></div></section>
+
+<section id="s3"><div class="sec-head"><span class="sec-num">3.</span><h2>体制・関係者（Who）</h2></div><div class="sec-body">
+<div class="sub-label">社内体制</div>
+<div class="org">
+<div class="org-card"><div class="role">統括</div><div class="name">${v(d.tokatsu)}</div><div class="desc">部次長レベルの意思決定者・最終責任者</div></div>
+<div class="org-card"><div class="role">管理（□）</div><div class="name">${v(d.kanri)}</div><div class="desc">進捗・品質管理を担う課長クラス</div></div>
+<div class="org-card"><div class="role">主担当（◎）</div><div class="name">${v(d.shutan)}</div><div class="desc">実務の中心担当者</div></div>
+<div class="org-card"><div class="role">主担補佐（○*）</div><div class="name">${v(d.hosa)}</div><div class="desc">主担当のバックアップ</div></div>
+<div class="org-card"><div class="role">副担当（○）</div><div class="name">${v(d.fukutan)}</div><div class="desc">サポート担当</div></div>
+</div>
+<div class="sub-label">社外・関係者</div>
+<table><thead><tr><th>No</th><th>組織・団体</th><th>役職・氏名</th><th>役割・関係性</th><th>備考（連絡先等）</th></tr></thead><tbody>${gaibuRows}</tbody></table>
+</div></section>
+
+<section id="s4"><div class="sec-head"><span class="sec-num">4.</span><h2>対応の流れ（When / How）</h2><span class="sec-note">※担当者レベルで特に重要</span></div><div class="sec-body">
+<table><thead><tr><th>No</th><th>時期</th><th>アクション</th><th>要点・IN/OUT・確認先</th><th>注意点</th></tr></thead><tbody>${flowRows}</tbody></table>
+</div></section>
+
+<section id="s5"><div class="sec-head"><span class="sec-num">5.</span><h2>知見・ノウハウ（暗黙知）</h2><span class="sec-note">★ここが最重要</span></div>
+<div class="sec-body" style="padding:0;border:none"><div class="knowhow">
+<div class="knowhow-lead">─ マニュアルに書かれない実務の勘所 ─</div>
+${khItems}
+</div></div></section>
+
+<section id="s6"><div class="sec-head"><span class="sec-num">6.</span><h2>費用・予算</h2></div><div class="sec-body">
+<div class="kv">
+<div class="k">費用の目安</div><div class="v">${v(d.cost)}</div>
+<div class="k">決済方法・精算フロー</div><div class="v">${v(d.payment)}</div>
+<div class="k">予算科目・申請方法</div><div class="v">${v(d.budget)}</div>
+</div></div></section>
+
+<section id="s7"><div class="sec-head"><span class="sec-num">7.</span><h2>次回への申し送り・未決事項</h2><span class="sec-note">★毎回更新すること</span></div><div class="sec-body">
+<table><thead><tr><th>No</th><th>項目</th><th>内容・現状</th><th>ステータス</th><th>期限・次アクション</th></tr></thead><tbody>${pendRows}</tbody></table>
+</div></section>
+
+<section id="s8"><div class="sec-head"><span class="sec-num">8.</span><h2>更新履歴</h2></div><div class="sec-body">
+<table><thead><tr><th>日付</th><th>記入者</th><th>更新内容</th></tr></thead><tbody>${histRows}</tbody></table>
+</div></section>
+
+<div class="footer-note"><span>JKA 知見継承データベース｜共通テンプレート v1.1</span><span>本シートは Excel「業務知見シート」8項目構成に準拠</span></div>
+</div>
+<script>
+let snapshot=null;
+const EDITABLE='.kv .v, tbody td:not(.no), .kh-body p, .kh-body .handoff, .org-card .name';
+function startEdit(){snapshot=document.querySelector('.wrap').innerHTML;document.body.classList.add('editing');document.querySelectorAll(EDITABLE).forEach(el=>el.setAttribute('contenteditable','true'));document.getElementById('btnArea').innerHTML='<button class="btn ghost" onclick="cancelEdit()">キャンセル</button><button class="btn gold" onclick="saveEdit()">変更を保存</button>'}
+function cancelEdit(){if(snapshot!==null){document.querySelector('.wrap').innerHTML=snapshot}exitEditMode()}
+function exitEditMode(){document.body.classList.remove('editing');document.querySelectorAll('[contenteditable]').forEach(el=>el.removeAttribute('contenteditable'));document.getElementById('btnArea').innerHTML='<button class="btn gold" onclick="startEdit()">更新</button>'}
+function today2(){const d=new Date();return d.getFullYear()+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+String(d.getDate()).padStart(2,'0')}
+function saveEdit(){const author=prompt('記入者名を入力してください','');if(author===null)return;const note=prompt('更新内容を一言で入力してください','');if(note===null)return;
+const tb=document.querySelector('#s8 tbody');const tr=document.createElement('tr');
+tr.innerHTML='<td class="timing">'+today2()+'</td><td>'+eh(author||'（未記入）')+'</td><td>'+eh(note||'（未記入）')+'</td>';tb.appendChild(tr);
+document.querySelectorAll('.kv').forEach(kv=>{kv.querySelectorAll('.k').forEach(k=>{if(k.textContent.trim()==='最終更新日'){k.nextElementSibling.textContent=today2()}})});
+const el=document.getElementById('lastUpdated');if(el){el.textContent=today2().replaceAll('/','-')}
+exitEditMode();saveToServer()}
+function eh(s){return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')}
+function saveToServer(){const html='<!DOCTYPE html>\\n'+document.documentElement.outerHTML;const blob=new Blob([html],{type:'text/html;charset=utf-8'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=document.title.replace('業務知見シート｜','知見継承シート_')+'.html';a.click();URL.revokeObjectURL(a.href);alert('更新後のHTMLをダウンロードしました。\\nGドライブの原本ファイルに上書き保存してください。')}
+<\/script>
+</body>
+</html>`;
+}
+
+/* =========================================================
+   サンプル読込（01_競の会）
+========================================================= */
+function loadSample(){
+  restore({
+    no:'01',name:'競の会（公営競技会長懇）事務局対応　＃第143回（2024年11月回）',
+    kakari:'部',kubun:'定常業務',status:'定常',kosu:'2',
+    freq:'年1回・11月頃（従来は年2回であったが、ボートの離脱により年1回に）',
+    gdrive:'G:\\共有ドライブ\\00_D100_経営企画部\\A200_重要会議体\\A300_競の会',
+    owner:'白石',updated:'2026-07-15',milestone:'',
+    purpose:'JRA・NAR・JKAの会長・理事長クラスが年1回懇談し、公営競技全体の情報共有・関係強化を行う場の事務局を担当する。',
+    history:'木戸会長の下命により、JKAの幹事回は「会長懇＋部長懇」の形式で開催されることになった。通常は会長のみの懇談だったが、部長レベルの交流も目的として追加された。',
+    chukei:'他団体との関係強化を通じた公営競技全体の振興に貢献。',
+    tokatsu:'部長不在であった',kanri:'白石（次長）',shutan:'白石（次長）',
+    hosa:'江口（次長）、中村（課長）、花牟禮（課長）　※当日現場のアテンド役',fukutan:'',
+    gaibu:[
+      {org:'JRA（日本中央競馬会）',pos:'理事長・部長',role:'懇談会参加者（主賓）',memo:'社用車・運転手あり'},
+      {org:'NAR（地方競馬全国協会）',pos:'理事長・部長',role:'懇談会参加者（主賓）',memo:'社用車・運転手あり'},
+      {org:'JKA',pos:'会長・統括役（企画部長兼務）',role:'主催者・事務局（幹事会は4名で対応）',memo:'タクシー移動'}
+    ],
+    flow:[
+      {time:'9月〜10月',act:'店舗選定・視察',point:'デスクリサーチで候補6店舗を選定→会長へ提示→3店舗を視察・部屋確認。事務局判断と会長進言を経てコンラッド東京（汐留）に決定。',warn:'神楽坂等、店舗前に車が付けられない立地は除外。駐車スペースの事前確認必須。'},
+      {time:'10月末',act:'各団体への案内文書発出',point:'JRA・NAR・JKA各団体宛に文書を発出。参加者の車ナンバーを確認しホテルと駐車スペースを調整。',warn:'各団体の社用車・運転手の有無を確認。駐車場がない場合は戻りのタイミングを事前調整。'},
+      {time:'開催前日まで',act:'当日準備・費用事前支払い',point:'総務手配でタクシー2台を手配。会場への費用事前支払いと領収書の事前受領を完了。',warn:'当日会議前に現金回収→領収書先渡しの流れがスムーズ。各団体1名11,000円（2名22,000円）の慣例確認。'},
+      {time:'当日（30分前）',act:'会場入り・アテンド',point:'開始30分前に会場着。各団体の到着に合わせてアテンド。会終了後は各団体をお見送り。',warn:'JKA事務方は当日の仕切りと各団体別アテンド役を担当。会長の配慮で2次会の可能性あり。'},
+      {time:'事後',act:'費用精算・次回調整',point:'JKA負担分（他団体の超過分含む）を精算。次回開催時期について各団体トップと調整。',warn:'費用：JKA負担276,100円（2024年実績）。次回は2025年11月開催予定で合意。'}
+    ],
+    knowhow:[
+      {cat:'幹事順',title:'各団体とのやりとり',body:'順番は、JRA→JKA→NAR。3年に1回幹事。',handoff:'次回幹事を務める際は、事前に各団体の部長へ「よろしくお願いします」と一言連絡しておくと、進行がスムーズです。'},
+      {cat:'開催頻度',title:'年1回開催への変更経緯',body:'従来は7月・11月の年2回開催であったが、2023年6月の開催を最後にボートが離脱（小高会長の意向）。2024年JKAの幹事会以降は「ボートが復活するまで年1回開催」ということで各団体と申し合わせ。2026年時点でも年1回の開催となっている。',handoff:'次にボートの会長が変わった際に、各団体の事務方経由で、各団体トップに経緯をお伝えし、「①ボートを含めて開催するのか」「②年2回に戻すのか」を調整する必要あり。事務方としては、ボート復活後は①のみの対応、必要が生じれば②も検討、という見解。'},
+      {cat:'関係者情報',title:'トップの食の好み',body:'時の会長・理事長の好みの食べ物を先方の企画経由で事前確認。秘書課が対応してくれる。',handoff:'地全協の斉藤理事長は体調不良でお酒・食事が難しい場合あり。おかゆ等の軽食を事前手配しておくと安心。'},
+      {cat:'費用管理',title:'費用の目安と精算方法',body:'1人あたり22,000円が各団体負担の目安（慣例）。JKAが超過分を負担。2024年実績はJKA負担276,100円。',handoff:'当日に会場へ事前支払い→領収書を事前受領→各団体から現金回収→領収書を渡す、の流れが最もスムーズ。'},
+      {cat:'会場選定',title:'会場選定の基準',body:'7月のJRA主催回に帯同し、当日の流れ（アテンド方法、車の手配、会計処理）を事前確認。9月より店舗選定開始。',handoff:'会場は「車が付けられること」「駐車スペースの確保」が必須条件。コンラッド東京はホテル1階に駐車スペースあり。'},
+      {cat:'手土産',title:'土産の質',body:'ファンプレ系はNG。直近は総務から提供してもらった高級ボールペンやタンブラーで対応した。よいものがなければ、会長に確認して、消えモノで別途お土産を調達するのも一考。',handoff:'クオカード等の金品は避ける。'}
+    ],
+    cost:'JKA負担分 約276,100円（2024年実績）\n各団体負担：1名11,000円×2名＝22,000円（慣例）',
+    payment:'当日に会場へ事前支払い → 領収書を事前受領 → 各団体から現金回収 → 領収書を渡す',
+    budget:'(共)調査研究会議費(9-1)',
+    pending:[
+      {title:'次回開催時期',status:'確認中',body:'2025年11月開催予定（JRA最終回答待ち）',action:'2025年1月末までにJRAへ確認'},
+      {title:'ボート参加問題',status:'継続検討',body:'ボートレース振興会が参加した場合、年2回開催に戻す可能性あり',action:'各トップの意向を確認'},
+      {title:'会場',status:'要対応',body:'コンラッド東京（風花）を継続使用するのか要検討。混雑時期の早期予約が必要',action:'9月頃に仮予約'}
+    ],
+    editor:'白石',
+    histories:[{date:'2026-07-15',who:'白石',note:'初回作成'}]
+  });
+  alert('サンプル（01_競の会）を読み込みました。');
+}
+</script>
+</body>
+</html>
