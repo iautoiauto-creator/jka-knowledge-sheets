@@ -1,0 +1,303 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>JKA 知見継承データベース｜組織トップ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#111111; --black-2:#1c1c1c;
+    --gold:#a8862e; --gold-dark:#8a6d1f; --gold-light:#c9a851; --gold-pale:#f5edd8;
+    --cream:#fdf8e8; --white:#ffffff; --bg:#f7f6f3;
+    --line:#d9d5cc; --line-dark:#b9b4a8;
+    --text:#222222; --text-sub:#666055;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  body{background:var(--bg);color:var(--text);
+    font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    font-size:14px;line-height:1.75;-webkit-font-smoothing:antialiased}
+
+  .sys-header{background:var(--black);color:var(--white);padding:14px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+  .sys-logo img{height:36px;width:auto;display:block}
+  .sys-title{font-weight:700;font-size:16px;letter-spacing:.04em}
+  .sys-title small{display:block;font-weight:400;font-size:9.5px;color:var(--gold-light);letter-spacing:.22em;margin-top:1px}
+  .sys-right{margin-left:auto;font-size:12px;color:#ccc}
+  .sys-right b{color:var(--white);font-weight:500}
+
+  .info-bar{background:var(--black);padding:10px 32px;display:flex;align-items:center;gap:14px;flex-wrap:wrap;font-size:12px;color:#ccc}
+  .badge{background:var(--gold);color:var(--black);font-weight:700;font-size:11px;padding:3px 12px;letter-spacing:.06em}
+  .info-bar b{color:var(--white);font-weight:500}
+
+  .wrap{max-width:1240px;margin:0 auto;padding:28px 32px 90px}
+  .crumb{font-size:12px;color:var(--text-sub);margin-bottom:18px}
+  .crumb span{color:var(--gold-dark)}
+  .page-title{border-left:5px solid var(--gold);padding-left:16px;margin-bottom:8px}
+  .page-title h1{font-size:24px;font-weight:900;letter-spacing:.03em;color:var(--black)}
+  .page-title .sub{font-size:13px;font-weight:500;color:var(--text-sub)}
+  .case-no{font-size:12px;font-weight:700;color:var(--gold-dark);letter-spacing:.14em;margin-bottom:4px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin:20px 0 6px}
+  .stat-card{background:var(--white);border:1px solid var(--line);border-top:3px solid var(--gold);padding:12px 16px}
+  .stat-card .lbl{font-size:11px;font-weight:700;color:var(--gold-dark);letter-spacing:.08em}
+  .stat-card .val{font-size:24px;font-weight:900;color:var(--black);line-height:1.3}
+  .stat-card .val small{font-size:12px;font-weight:500;color:var(--text-sub);margin-left:4px}
+
+  .filter-bar{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 16px}
+  .search-box{position:relative;flex:1;min-width:240px;max-width:420px}
+  .search-box input{font-family:inherit;font-size:13px;padding:8px 14px 8px 34px;border:1px solid var(--line);background:var(--white);width:100%;outline:none}
+  .search-box input:focus{border-color:var(--gold)}
+  .search-box::before{content:"⌕";position:absolute;left:11px;top:50%;transform:translateY(-54%);font-size:16px;color:var(--gold-dark)}
+  .legend{background:var(--gold-pale);border:1px solid var(--line);font-size:12px;color:var(--text-sub);padding:8px 16px}
+
+  /* ===== 部カード ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(280px,1fr));gap:14px;margin-top:18px}
+  .dept-card{background:var(--white);border:1px solid var(--line);border-top:3px solid var(--black);display:flex;flex-direction:column}
+  .dept-card.is-pub{border-top-color:var(--gold)}
+  .dept-card.wide{grid-column:1 / -1}
+  .dept-head{display:flex;align-items:center;gap:8px;padding:12px 16px;text-decoration:none;color:var(--black);
+    background:var(--black);transition:.15s}
+  .dept-head:hover{background:var(--black-2)}
+  .dept-name{font-weight:900;font-size:15px;color:var(--white);letter-spacing:.03em}
+  .dept-name .note{font-size:10px;font-weight:400;color:var(--gold-light);margin-left:6px;vertical-align:2px}
+  .arrow{margin-left:auto;color:var(--gold-light);font-weight:700}
+  .pub-badge,.prep-badge{font-size:10px;font-weight:700;padding:1px 9px;letter-spacing:.08em;white-space:nowrap}
+  .pub-badge{background:var(--gold);color:var(--black)}
+  .prep-badge{background:transparent;border:1px solid #555;color:#999}
+  .ka-list{display:flex;flex-wrap:wrap;gap:6px;padding:12px 14px}
+  .ka-chip{font-size:12px;font-weight:500;color:var(--text);text-decoration:none;
+    border:1px solid var(--line-dark);background:var(--white);padding:3px 12px;transition:.15s;white-space:nowrap}
+  .ka-chip:hover{border-color:var(--gold);color:var(--gold-dark);background:var(--gold-pale)}
+  .ka-chip.pub{border-color:var(--gold);background:var(--gold-pale);font-weight:700}
+  .ka-none{padding:12px 16px;font-size:12px;color:var(--text-sub)}
+
+  /* ===== 3階層カード ===== */
+  .tier-label{font-size:11.5px;font-weight:700;color:var(--gold-dark);letter-spacing:.06em;padding:12px 16px 0}
+  .office-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px;padding:10px 14px 14px}
+  .office{border:1px solid var(--line);background:#fbfaf7}
+  .office-name{display:block;font-size:12.5px;font-weight:700;color:var(--black);text-decoration:none;
+    background:var(--gold-pale);border-bottom:1px solid var(--line);padding:6px 12px}
+  .office-name:hover{color:var(--gold-dark)}
+  .office .ka-list{padding:10px 12px}
+  .team-grid{display:flex;flex-wrap:wrap;gap:5px;padding:8px 16px 16px;align-items:center}
+  .team-chip{font-size:11px;font-weight:500;color:var(--text-sub);text-decoration:none;
+    border:1px solid var(--line);background:var(--white);padding:2px 9px;transition:.15s}
+  .team-chip:hover{border-color:var(--gold);color:var(--gold-dark)}
+  .team-unit{font-size:11px;color:var(--text-sub);margin-left:4px}
+
+  .no-hit{display:none;padding:32px;text-align:center;color:var(--text-sub);font-size:13px;background:var(--white);border:1px solid var(--line);margin-top:14px}
+  .footer-note{margin-top:64px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:11px;color:var(--text-sub);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+
+  @media (max-width:720px){
+    .sys-header,.info-bar{padding-left:16px;padding-right:16px}
+    .wrap{padding:20px 16px 64px}
+    .page-title h1{font-size:19px}
+  }
+</style>
+</head>
+<body>
+
+<div class="sys-header">
+  <div class="sys-logo"><img src="data:image/png;base64,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" alt="JKA"></div>
+  <div class="sys-title">JKA 知見継承データベース<small>JKA KNOWLEDGE TRANSFER DATABASE</small></div>
+  <div class="sys-right"><b>白石</b> さん / 経営企画部長</div>
+</div>
+
+<div class="info-bar">
+  <span class="badge">組織トップ</span>
+  部・室 <b>16</b> ／ 課 <b>46</b> ／ 競技実施チーム <b>24</b>
+  ／ 知見DB公開 <b>1</b> 部門（経営企画部）
+</div>
+
+<div class="wrap">
+  <div class="crumb"><span>ホーム</span></div>
+
+  <div class="page-title">
+    <div class="case-no">JKA ／ ORGANIZATION INDEX</div>
+    <h1>組織から探す <span class="sub">部・課を選択すると各部門の知見継承データベースへ移動します</span></h1>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card"><div class="lbl">部・室</div><div class="val">16<small>部門</small></div></div>
+    <div class="stat-card"><div class="lbl">課</div><div class="val">46<small>課</small></div></div>
+    <div class="stat-card"><div class="lbl">競技実施チーム</div><div class="val">24<small>チーム</small></div></div>
+    <div class="stat-card"><div class="lbl">知見DB公開</div><div class="val">1<small>/ 16 部門</small></div></div>
+  </div>
+
+  <div class="filter-bar">
+    <div class="search-box"><input type="text" id="searchInput" placeholder="部名・課名で検索…"></div>
+    <div class="legend">
+      <span class="pub-badge">公開中</span> ＝ 知見継承DB整備済　／　<span class="prep-badge">準備中</span> ＝ 今後整備予定。部名クリックで案件一覧へ、課名クリックで課の案件へ直接移動できます。
+    </div>
+  </div>
+
+  <div class="grid" id="deptGrid">
+<div class="dept-card is-pub" data-search="経営企画部 企画課 振興調整課">
+  <a class="dept-head" href="知見継承シート_00_案件一覧.html">
+    <span class="dept-name">経営企画部<span class="note">※1</span></span><span class="pub-badge">公開中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip pub" href="知見継承シート_00_案件一覧.html" data-search="経営企画部 企画課">企画課</a><a class="ka-chip pub" href="知見継承シート_00_案件一覧.html" data-search="経営企画部 振興調整課">振興調整課</a></div>
+</div>
+<div class="dept-card" data-search="総務部 総務課 財務出納課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">総務部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="総務部 総務課">総務課</a><a class="ka-chip" href="#" data-search="総務部 財務出納課">財務出納課</a></div>
+</div>
+<div class="dept-card" data-search="人事部 人事管理課 人事企画課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">人事部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="人事部 人事管理課">人事管理課</a><a class="ka-chip" href="#" data-search="人事部 人事企画課">人事企画課</a></div>
+</div>
+<div class="dept-card" data-search="補助事業部 補助事業企画課 補助事業課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">補助事業部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="補助事業部 補助事業企画課">補助事業企画課</a><a class="ka-chip" href="#" data-search="補助事業部 補助事業課">補助事業課</a></div>
+</div>
+<div class="dept-card" data-search="広報部 広報宣伝課 広報報道課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">広報部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="広報部 広報宣伝課">広報宣伝課</a><a class="ka-chip" href="#" data-search="広報部 広報報道課">広報報道課</a></div>
+</div>
+<div class="dept-card" data-search="競輪検定指導部 検定登録課 公正課 選手訓練課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">競輪検定指導部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪検定指導部 検定登録課">検定登録課</a><a class="ka-chip" href="#" data-search="競輪検定指導部 公正課">公正課</a><a class="ka-chip" href="#" data-search="競輪検定指導部 選手訓練課">選手訓練課</a></div>
+</div>
+<div class="dept-card" data-search="競輪振興業務部 振興事業課 あっせん課 業務課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">競輪振興業務部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪振興業務部 振興事業課">振興事業課</a><a class="ka-chip" href="#" data-search="競輪振興業務部 あっせん課">あっせん課</a><a class="ka-chip" href="#" data-search="競輪振興業務部 業務課">業務課</a></div>
+</div>
+<div class="dept-card" data-search="伊豆事業部 庶務課 自転車競技振興課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">伊豆事業部<span class="note">※2</span></span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="伊豆事業部 庶務課">庶務課</a><a class="ka-chip" href="#" data-search="伊豆事業部 自転車競技振興課">自転車競技振興課</a></div>
+</div>
+<div class="dept-card" data-search="日本競輪選手養成所 養成課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">日本競輪選手養成所</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="日本競輪選手養成所 養成課">養成課</a></div>
+</div>
+<div class="dept-card" data-search="競輪情報システム部 システム事業課 システム運用課 システム開発課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">競輪情報システム部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪情報システム部 システム事業課">システム事業課</a><a class="ka-chip" href="#" data-search="競輪情報システム部 システム運用課">システム運用課</a><a class="ka-chip" href="#" data-search="競輪情報システム部 システム開発課">システム開発課</a></div>
+</div>
+<div class="dept-card" data-search="オートレース振興業務部 振興事業課 あっせん課 業務登録課 公正課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">オートレース振興業務部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="オートレース振興業務部 振興事業課">振興事業課</a><a class="ka-chip" href="#" data-search="オートレース振興業務部 あっせん課">あっせん課</a><a class="ka-chip" href="#" data-search="オートレース振興業務部 業務登録課">業務登録課</a><a class="ka-chip" href="#" data-search="オートレース振興業務部 公正課">公正課</a></div>
+</div>
+<div class="dept-card" data-search="オートレース選手養成所 庶務課 養成課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">オートレース選手養成所</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="オートレース選手養成所 庶務課">庶務課</a><a class="ka-chip" href="#" data-search="オートレース選手養成所 養成課">養成課</a></div>
+</div>
+<div class="dept-card" data-search="競輪競技統括部 競技統括課 執務編成課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">競輪競技統括部</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪競技統括部 競技統括課">競技統括課</a><a class="ka-chip" href="#" data-search="競輪競技統括部 執務編成課">執務編成課</a></div>
+</div>
+<div class="dept-card wide" data-search="競輪競技部 競技課 競技実施チーム">
+  <a class="dept-head" href="#">
+    <span class="dept-name">競輪競技部</span><span class="prep-badge">準備中</span><span class="arrow">→</span>
+  </a>
+  <div class="tier-label">■ 各事務所（第2階層）</div>
+  <div class="office-grid"><div class="office">
+      <a class="office-name" href="#">名古屋事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪競技部 名古屋事務所 競技課">競技課</a></div>
+    </div><div class="office">
+      <a class="office-name" href="#">大阪事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪競技部 大阪事務所 競技課">競技課</a></div>
+    </div><div class="office">
+      <a class="office-name" href="#">高松事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪競技部 高松事務所 競技課">競技課</a></div>
+    </div><div class="office">
+      <a class="office-name" href="#">福岡事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="競輪競技部 福岡事務所 競技課">競技課</a></div>
+    </div></div>
+  <div class="tier-label">■ 競技実施チーム（部直下・第2階層）</div>
+  <div class="team-grid"><a class="team-chip" href="#" data-search="競輪競技部 第1競技実施チーム">第1</a><a class="team-chip" href="#" data-search="競輪競技部 第2競技実施チーム">第2</a><a class="team-chip" href="#" data-search="競輪競技部 第3競技実施チーム">第3</a><a class="team-chip" href="#" data-search="競輪競技部 第4競技実施チーム">第4</a><a class="team-chip" href="#" data-search="競輪競技部 第5競技実施チーム">第5</a><a class="team-chip" href="#" data-search="競輪競技部 第6競技実施チーム">第6</a><a class="team-chip" href="#" data-search="競輪競技部 第7競技実施チーム">第7</a><a class="team-chip" href="#" data-search="競輪競技部 第8競技実施チーム">第8</a><a class="team-chip" href="#" data-search="競輪競技部 第9競技実施チーム">第9</a><a class="team-chip" href="#" data-search="競輪競技部 第10競技実施チーム">第10</a><a class="team-chip" href="#" data-search="競輪競技部 第11競技実施チーム">第11</a><a class="team-chip" href="#" data-search="競輪競技部 第12競技実施チーム">第12</a><a class="team-chip" href="#" data-search="競輪競技部 第13競技実施チーム">第13</a><a class="team-chip" href="#" data-search="競輪競技部 第14競技実施チーム">第14</a><a class="team-chip" href="#" data-search="競輪競技部 第15競技実施チーム">第15</a><a class="team-chip" href="#" data-search="競輪競技部 第16競技実施チーム">第16</a><a class="team-chip" href="#" data-search="競輪競技部 第17競技実施チーム">第17</a><a class="team-chip" href="#" data-search="競輪競技部 第18競技実施チーム">第18</a><a class="team-chip" href="#" data-search="競輪競技部 第19競技実施チーム">第19</a><a class="team-chip" href="#" data-search="競輪競技部 第20競技実施チーム">第20</a><a class="team-chip" href="#" data-search="競輪競技部 第21競技実施チーム">第21</a><a class="team-chip" href="#" data-search="競輪競技部 第22競技実施チーム">第22</a><a class="team-chip" href="#" data-search="競輪競技部 第23競技実施チーム">第23</a><a class="team-chip" href="#" data-search="競輪競技部 第24競技実施チーム">第24</a><span class="team-unit">競技実施チーム</span></div>
+</div>
+<div class="dept-card wide" data-search="事務所管理室 庶務課 会計課 労務課">
+  <a class="dept-head" href="#">
+    <span class="dept-name">事務所管理室</span><span class="prep-badge">準備中</span><span class="arrow">→</span>
+  </a>
+  <div class="tier-label">■ 各事務所（第2階層）／ 各課（第3階層）</div>
+  <div class="office-grid"><div class="office">
+      <a class="office-name" href="#">名古屋事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="事務所管理室 名古屋事務所 庶務課">庶務課</a><a class="ka-chip" href="#" data-search="事務所管理室 名古屋事務所 会計課">会計課</a><a class="ka-chip" href="#" data-search="事務所管理室 名古屋事務所 労務課">労務課</a></div>
+    </div><div class="office">
+      <a class="office-name" href="#">大阪事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="事務所管理室 大阪事務所 庶務課">庶務課</a><a class="ka-chip" href="#" data-search="事務所管理室 大阪事務所 会計課">会計課</a><a class="ka-chip" href="#" data-search="事務所管理室 大阪事務所 労務課">労務課</a></div>
+    </div><div class="office">
+      <a class="office-name" href="#">高松事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="事務所管理室 高松事務所 庶務課">庶務課</a><a class="ka-chip" href="#" data-search="事務所管理室 高松事務所 会計課">会計課</a><a class="ka-chip" href="#" data-search="事務所管理室 高松事務所 労務課">労務課</a></div>
+    </div><div class="office">
+      <a class="office-name" href="#">福岡事務所</a>
+      <div class="ka-list"><a class="ka-chip" href="#" data-search="事務所管理室 福岡事務所 庶務課">庶務課</a><a class="ka-chip" href="#" data-search="事務所管理室 福岡事務所 会計課">会計課</a><a class="ka-chip" href="#" data-search="事務所管理室 福岡事務所 労務課">労務課</a></div>
+    </div></div>
+</div>
+<div class="dept-card" data-search="監査室 ">
+  <a class="dept-head" href="#">
+    <span class="dept-name">監査室</span><span class="prep-badge">準備中</span>
+    <span class="arrow">→</span>
+  </a>
+  <div class="ka-none">課の設置なし（室単位で管理）</div>
+</div>
+  </div>
+  <div class="no-hit" id="noHit">該当する部・課がありません。検索語を変更してください。</div>
+
+  <div class="footer-note">
+    <span>JKA 知見継承データベース｜組織トップ（モック） v1.0</span>
+    <span>組織構成は組織図（※1・※2の注記含む）に準拠。自衛警備隊は本DBの対象外</span>
+  </div>
+</div>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.dept-card'));
+  var noHit = document.getElementById('noHit');
+  document.getElementById('searchInput').addEventListener('input', function(e){
+    var q = e.target.value.trim().toLowerCase();
+    var visible = 0;
+    cards.forEach(function(c){
+      var hay = (c.dataset.search || '').toLowerCase();
+      var ok = q === '' || hay.indexOf(q) > -1;
+      c.style.display = ok ? '' : 'none';
+      if(ok) visible++;
+    });
+    noHit.style.display = visible ? 'none' : 'block';
+  });
+})();
+</script>
+</body>
+</html>
