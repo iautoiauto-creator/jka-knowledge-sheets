@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>業務知見シート｜04 大阪・関西万博推進PJ</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#111111;
+    --black-2:#1c1c1c;
+    --gold:#a8862e;
+    --gold-dark:#8a6d1f;
+    --gold-light:#c9a851;
+    --gold-pale:#f5edd8;
+    --cream:#fdf8e8;
+    --white:#ffffff;
+    --bg:#f7f6f3;
+    --line:#d9d5cc;
+    --line-dark:#b9b4a8;
+    --text:#222222;
+    --text-sub:#666055;
+    --red:#b03a2e;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",sans-serif;
+    font-size:14px;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+
+  /* ===== システムヘッダー（黒帯） ===== */
+  .sys-header{
+    background:var(--black);
+    color:var(--white);
+    padding:14px 32px;
+    display:flex;align-items:center;gap:14px;
+  }
+  .sys-logo{
+    height:36px;display:flex;align-items:center;flex-shrink:0;
+  }
+  .sys-logo img{height:36px;width:auto;display:block}
+  .sys-title{font-weight:700;font-size:16px;letter-spacing:.04em}
+  .sys-title small{display:block;font-weight:400;font-size:9.5px;color:var(--gold-light);letter-spacing:.22em;margin-top:1px}
+  .sys-right{margin-left:auto;font-size:12px;color:#ccc}
+  .sys-right b{color:var(--white);font-weight:500}
+
+  /* ===== 更新ボタン・編集モード ===== */
+  .btn-area{display:flex;gap:8px;margin-left:18px}
+  .btn{
+    font-family:inherit;font-size:13px;font-weight:700;letter-spacing:.08em;
+    padding:8px 22px;cursor:pointer;border:1px solid var(--gold);
+    background:transparent;color:var(--gold-light);transition:.15s;
+  }
+  .btn:hover{background:rgba(201,168,81,.15)}
+  .btn.gold{background:var(--gold);color:var(--black)}
+  .btn.gold:hover{background:var(--gold-light)}
+  .btn.ghost{border-color:#666;color:#bbb}
+  .btn.ghost:hover{background:rgba(255,255,255,.08)}
+
+  body.editing .kv .v,
+  body.editing tbody td:not(.no):not(.locked),
+  body.editing .kh-body p,
+  body.editing .kh-body .handoff,
+  body.editing .org-card .name{
+    outline:2px dashed var(--gold);outline-offset:-2px;
+    background:var(--cream)!important;cursor:text;
+  }
+  body.editing .kv .v:focus,
+  body.editing tbody td:focus,
+  body.editing .kh-body p:focus,
+  body.editing .kh-body .handoff:focus,
+  body.editing .org-card .name:focus{
+    outline:2px solid var(--gold);background:var(--white)!important;
+  }
+  .edit-banner{
+    display:none;background:var(--gold);color:var(--black);
+    font-size:12.5px;font-weight:700;letter-spacing:.06em;
+    padding:8px 32px;
+  }
+  body.editing .edit-banner{display:block}
+
+  /* ===== ナビ帯（濃黒） ===== */
+  nav.toc{
+    position:sticky;top:0;z-index:10;
+    background:var(--black-2);
+    padding:0 32px;
+    display:flex;overflow-x:auto;white-space:nowrap;
+  }
+  nav.toc a{
+    color:#bbb;text-decoration:none;font-size:12.5px;font-weight:500;
+    padding:11px 16px;letter-spacing:.04em;border-bottom:3px solid transparent;
+  }
+  nav.toc a:hover{color:var(--white);background:rgba(255,255,255,.06);border-bottom-color:var(--gold)}
+  nav.toc a.star{color:var(--gold-light)}
+
+  /* ===== 対象帯（黒・情報バー） ===== */
+  .info-bar{
+    background:var(--black);
+    padding:10px 32px;
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    font-size:12px;color:#ccc;
+  }
+  .badge{
+    background:var(--gold);color:var(--black);
+    font-weight:700;font-size:11px;padding:3px 12px;letter-spacing:.06em;
+  }
+  .info-bar b{color:var(--white);font-weight:500}
+
+  .wrap{max-width:1120px;margin:0 auto;padding:28px 32px 90px}
+
+  /* ===== パンくず・タイトル ===== */
+  .crumb{font-size:12px;color:var(--text-sub);margin-bottom:18px}
+  .crumb span{color:var(--gold-dark)}
+  .page-title{
+    border-left:5px solid var(--gold);
+    padding-left:16px;margin-bottom:8px;
+  }
+  .page-title h1{
+    font-size:24px;font-weight:900;letter-spacing:.03em;color:var(--black);
+    display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;
+  }
+  .page-title h1 .sub{font-size:13px;font-weight:500;color:var(--text-sub)}
+  .case-no{font-size:12px;font-weight:700;color:var(--gold-dark);letter-spacing:.14em;margin-bottom:4px}
+
+  .status-row{display:flex;flex-wrap:wrap;gap:8px;margin:16px 0 4px}
+  .chip{
+    font-size:12px;padding:4px 14px;background:var(--white);
+    border:1px solid var(--line);color:var(--text-sub);
+  }
+  .chip b{color:var(--text);font-weight:700;margin-left:6px}
+  .chip.gold{background:var(--gold);border-color:var(--gold);color:var(--black);font-weight:700}
+
+  /* ===== 凡例バー ===== */
+  .legend{
+    background:var(--gold-pale);border:1px solid var(--line);
+    font-size:12px;color:var(--text-sub);
+    padding:8px 16px;margin-top:16px;
+  }
+  .legend .sw{
+    display:inline-block;width:11px;height:11px;vertical-align:-1px;margin:0 4px 0 12px;
+    border:1px solid var(--line-dark);
+  }
+  .sw.cream{background:var(--cream)}
+  .sw.white{background:var(--white)}
+
+  /* ===== セクション共通 ===== */
+  section{margin-top:44px}
+  .sec-head{
+    background:var(--black);color:var(--white);
+    padding:10px 18px;
+    display:flex;align-items:baseline;gap:12px;
+  }
+  .sec-num{color:var(--gold-light);font-weight:900;font-size:15px}
+  .sec-head h2{font-size:15px;font-weight:700;letter-spacing:.05em}
+  .sec-note{font-size:11px;color:var(--gold-light);margin-left:auto;letter-spacing:.04em}
+
+  .sec-body{
+    background:var(--white);
+    border:1px solid var(--line);border-top:none;
+    padding:22px;
+  }
+
+  /* ===== 定義リスト ===== */
+  .kv{display:grid;grid-template-columns:200px 1fr;border:1px solid var(--line)}
+  .kv>div{padding:11px 16px;border-bottom:1px solid var(--line);font-size:13.5px;background:var(--white)}
+  .kv>div:nth-last-child(-n+2){border-bottom:none}
+  .kv .k{
+    background:var(--gold-pale);color:var(--text);font-weight:700;font-size:12.5px;
+    border-right:1px solid var(--line);
+  }
+  .kv .v b{color:var(--gold-dark);font-weight:700}
+  .kv .v .path{font-size:12px;color:var(--text-sub);word-break:break-all}
+  .kv .empty{
+    color:var(--text-sub);background:var(--cream);
+    display:inline-block;padding:1px 10px;font-size:12px;border:1px dashed var(--line-dark);
+  }
+
+  /* ===== テーブル ===== */
+  table{width:100%;border-collapse:collapse;font-size:13px;background:var(--white)}
+  thead th{
+    text-align:left;padding:9px 12px;font-weight:700;font-size:12px;
+    color:var(--gold-light);letter-spacing:.06em;
+    background:var(--black);white-space:nowrap;
+    border:1px solid var(--black);
+  }
+  tbody td{padding:11px 12px;border:1px solid var(--line);vertical-align:top}
+  tbody tr:nth-child(even) td{background:#fbfaf7}
+  td.no{
+    color:var(--gold-dark);font-weight:900;font-size:14px;width:36px;text-align:center;
+    background:var(--gold-pale)!important;
+  }
+  td.timing{white-space:nowrap;font-weight:700;width:120px}
+  td.warn{color:var(--red);background:var(--cream)!important;font-size:12.5px}
+  .st{font-size:11px;font-weight:700;padding:2px 10px;white-space:nowrap;display:inline-block}
+  .st.check{background:var(--gold);color:var(--black)}
+  .st.cont{background:#e7e4dc;color:var(--text-sub)}
+  .st.todo{background:var(--red);color:var(--white)}
+
+  /* ===== 体制カード ===== */
+  .org{display:grid;grid-template-columns:repeat(auto-fit,minmax(190px,1fr));gap:10px;margin-bottom:24px}
+  .org-card{
+    background:var(--white);border:1px solid var(--line);border-top:3px solid var(--gold);
+    padding:12px 14px;
+  }
+  .org-card .role{font-size:11px;font-weight:700;color:var(--gold-dark);letter-spacing:.08em;margin-bottom:3px}
+  .org-card .name{font-size:13.5px;font-weight:700;color:var(--black)}
+  .org-card .desc{font-size:11px;color:var(--text-sub);margin-top:5px;line-height:1.5}
+
+  .sub-label{
+    font-size:13px;font-weight:700;color:var(--black);
+    border-left:4px solid var(--gold);padding-left:10px;margin:0 0 12px;
+  }
+
+  /* ===== セクション5（暗黙知）強調 ===== */
+  .knowhow{border:2px solid var(--gold);background:var(--cream);padding:22px}
+  .knowhow-lead{
+    font-size:12.5px;font-weight:700;color:var(--gold-dark);
+    letter-spacing:.12em;margin-bottom:18px;
+  }
+  .kh-item{
+    display:grid;grid-template-columns:170px 1fr;gap:0 20px;
+    padding:16px 0;border-top:1px solid var(--line-dark);
+  }
+  .kh-item:first-of-type{border-top:none;padding-top:0}
+  .kh-tag{font-size:11px;font-weight:700;color:var(--gold-dark);letter-spacing:.1em;margin-bottom:3px}
+  .kh-title{font-weight:900;font-size:14.5px;line-height:1.5;color:var(--black)}
+  .kh-body p{font-size:13.5px}
+  .kh-body .handoff{
+    margin-top:8px;padding:10px 14px;background:var(--white);
+    border:1px solid var(--line);border-left:4px solid var(--gold);
+    font-size:13px;
+  }
+  .kh-body .handoff::before{
+    content:"次担当への引継ポイント";display:block;
+    font-size:10.5px;font-weight:700;color:var(--gold-dark);letter-spacing:.12em;margin-bottom:3px;
+  }
+  /* 補足ボックス（過去実績など） */
+  .aside{
+    margin-top:8px;padding:10px 14px;background:#f6f4ee;
+    border:1px solid var(--line);font-size:12.5px;color:var(--text-sub);line-height:1.7;
+  }
+
+  .footer-note{
+    margin-top:64px;padding-top:18px;border-top:1px solid var(--line);
+    font-size:11px;color:var(--text-sub);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px;
+  }
+
+  @media (max-width:720px){
+    .sys-header,.info-bar,nav.toc{padding-left:16px;padding-right:16px}
+    .wrap{padding:20px 16px 64px}
+    .page-title h1{font-size:19px}
+    .kv{grid-template-columns:1fr}
+    .kv .k{border-right:none}
+    .kh-item{grid-template-columns:1fr;gap:6px}
+  }
+  @media print{
+    nav.toc{display:none}
+    body{background:#fff}
+    section{break-inside:avoid-page}
+  }
+</style>
+</head>
+<body>
+
+<!-- システムヘッダー -->
+<div class="sys-header">
+  <div class="sys-logo" id="jkaLogo"><img src="data:image/png;base64,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" alt="JKA"></div>
+  <div class="sys-title">経営企画部 知見継承データベース
+    <small>KEIEI-KIKAKU KNOWLEDGE TRANSFER DATABASE</small>
+  </div>
+  <div class="sys-right"><b>白石</b> さん / 部長</div>
+  <div class="btn-area" id="btnArea">
+    <button class="btn gold" id="btnEdit" onclick="startEdit()">更新</button>
+  </div>
+</div>
+
+<!-- 目次ナビ -->
+<nav class="toc">
+  <a href="#s1">1. 基本情報</a>
+  <a href="#s2">2. 目的と背景</a>
+  <a href="#s3">3. 体制・関係者</a>
+  <a href="#s4">4. 対応の流れ</a>
+  <a href="#s5" class="star">5. 知見・ノウハウ ★</a>
+  <a href="#s6">6. 費用・予算</a>
+  <a href="#s7">7. 申し送り</a>
+  <a href="#s8">8. 更新履歴</a>
+</nav>
+
+<!-- 情報バー -->
+<div class="info-bar">
+  <span class="badge">完了</span>
+  <span>案件No <b>04</b></span>
+  <span>区分 <b>プロジェクト</b></span>
+  <span>最終更新 <b id="lastUpdated">2026-07-24</b></span>
+</div>
+
+<div class="edit-banner">✎ 編集モード：破線枠の欄をクリックして直接書き換えられます。完了したら右上の「変更を保存」を押してください。</div>
+
+<div class="wrap">
+
+<div class="crumb">ホーム　›　案件一覧　›　<span>04_大阪・関西万博推進PJ</span></div>
+
+<div class="case-no">CASE 04（1）／ プロジェクト</div>
+<div class="page-title">
+  <h1>大阪・関西万博推進PJ
+    <span class="sub">2025年日本国際博覧会 協賛・支援／催事</span>
+  </h1>
+</div>
+
+<div class="status-row">
+  <span class="chip gold">ステータス：完了</span>
+  <span class="chip">係<b>部</b></span>
+  <span class="chip">工数係数<b>3</b></span>
+  <span class="chip">更新責任者<b>白石</b></span>
+</div>
+
+<div class="legend">
+  凡例：<span class="sw cream"></span>記入・要更新欄　<span class="sw white"></span>確定情報欄　　★＝マニュアルに書かれない実務の勘所（本DBの中核）
+</div>
+
+<!-- ============ 1 ============ -->
+<section id="s1">
+  <div class="sec-head"><span class="sec-num">1.</span><h2>基本情報</h2></div>
+  <div class="sec-body">
+    <div class="kv">
+      <div class="k">業務名・会議名</div><div class="v">大阪・関西万博推進PJ</div>
+      <div class="k">係</div><div class="v">部</div>
+      <div class="k">区分</div><div class="v">プロジェクト</div>
+      <div class="k">ステータス</div><div class="v"><b>完了</b></div>
+      <div class="k">発生頻度・時期</div><div class="v">2022年度〜2025年度</div>
+      <div class="k">工数（係数）</div><div class="v">3（1〜3の係数）</div>
+      <div class="k">関連ファイル</div><div class="v"><span class="path">G:\共有ドライブ\P720_万博推進PJ</span></div>
+      <div class="k">更新責任者</div><div class="v">白石</div>
+      <div class="k">最終更新日</div><div class="v">2026/07/24</div>
+      <div class="k">次マイルストーン・期限</div><div class="v">なし（2025年10月17日の理事会報告をもってPJ解散）</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 2 ============ -->
+<section id="s2">
+  <div class="sec-head"><span class="sec-num">2.</span><h2>目的と背景（Why）</h2><span class="sec-note">※部次長レベルで特に重要</span></div>
+  <div class="sec-body">
+    <div class="kv">
+      <div class="k">業務の内容</div>
+      <div class="v">2025年日本国際博覧会（大阪・関西万博）に対する協賛・支援、および会期中の催事の概要。競輪・オートレース業界としての支援総額は<b>110億円</b>。<br>　・JKA負担　80億円（協賛70億円［当初60億円＋追加10億円］＋補助事業10億円）<br>　・施行者負担　30億円（万博協賛競輪）<br>本シートは、支援要請から催事実施・PJ解散までの一連の経緯を整理したもの。</div>
+      <div class="k">業務の目的</div>
+      <div class="v">万博協賛の大義は「競輪の認知拡大とイメージアップ」。<br>競輪中期基本方針において本協賛を位置づけたうえで、産業構造審議会（産構審）にも報告している。<br>万博推進PJも、この大義の達成を最終目標として運営された。</div>
+      <div class="k">発足の経緯・背景</div>
+      <div class="v">協賛決定に至る時系列は「4. 対応の流れ」を参照。<br>催事を担う万博推進PJは、複数部署から横断的に選出された若手メンバーを中心に2023年7月に発足。企画戦略部（現：経営企画部）を事務局とし、2025年10月の最終報告まで約2年3か月にわたり運営された。</div>
+      <div class="k">中計・方針との関連</div>
+      <div class="v">競輪・オートレース中期基本方針に本協賛・支援が明記され、アクションプラン上の管理項目としてもフォローされていた。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 3 ============ -->
+<section id="s3">
+  <div class="sec-head"><span class="sec-num">3.</span><h2>体制・関係者（Who）</h2></div>
+  <div class="sec-body">
+
+    <div class="sub-label">社内体制</div>
+    <div class="org">
+      <div class="org-card"><div class="role">統括</div><div class="name">─（当時、部長不在）</div><div class="desc">部次長レベルの意思決定者・最終責任者</div></div>
+      <div class="org-card"><div class="role">管理（□）</div><div class="name">江口（次長）→ 白石（次長）</div><div class="desc">進捗・品質管理を担う課長クラス</div></div>
+      <div class="org-card"><div class="role">主担当（◎）</div><div class="name">江口（次長）→ 白石（次長）→ 中村（課長）</div><div class="desc">実務の中心担当者　※中村は催事推進PJ長</div></div>
+      <div class="org-card"><div class="role">主担補佐（○*）</div><div class="name">万博推進PJ（催事）メンバー</div><div class="desc">上林規久子、岡川拓磨、石川裕規、横山航輝、近藤美子、森本時央、髙﨑将輝、望月康平、森泰佑</div></div>
+      <div class="org-card"><div class="role">副担当（○）</div><div class="name">なし</div><div class="desc">サポート担当</div></div>
+    </div>
+
+    <div class="sub-label">社外・関係者</div>
+    <table>
+      <thead><tr><th>No</th><th>組織・団体</th><th>役職・氏名</th><th>役割・関係性</th><th>備考（連絡先等）</th></tr></thead>
+      <tbody>
+        <tr><td class="no">1</td><td>2025年日本国際博覧会協会<br>（会期前）</td><td>生沼教行 → 大場博之 → 比良山大介（順次交代）</td><td>契約および催事関係の窓口</td><td></td></tr>
+        <tr><td class="no">2</td><td>2025年日本国際博覧会協会<br>（会期中〜終了時）</td><td>河本健一（企画局長）</td><td>経済産業省からの出向。会期終盤の再追加支援要請の窓口</td><td></td></tr>
+        <tr><td class="no">3</td><td>株式会社丹青社</td><td>佐藤夕奈、榎本浩佳</td><td>万博催事の委託業者（窓口）</td><td>当財団と同じビル（Sテラス）19階に入居</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 4 ============ -->
+<section id="s4">
+  <div class="sec-head"><span class="sec-num">4.</span><h2>対応の流れ（When / How）</h2><span class="sec-note">※担当者レベルで特に重要</span></div>
+  <div class="sec-body">
+    <table>
+      <thead><tr><th>No</th><th>時期</th><th>アクション</th><th>要点・IN/OUT・確認先</th><th>注意点</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="no">1</td><td class="timing">2022/04/04</td><td>経済産業省車両室長名による要請文書（三浦室長 → 笹部会長）</td>
+          <td>協賛競輪（協賛オートレースを含む）および補助事業等による支援の要請。</td>
+          <td class="warn"></td>
+        </tr>
+        <tr>
+          <td class="no">2</td><td class="timing">2022/04/07</td><td>オートレース業界の態度表明</td>
+          <td>要請文書を受け、全国小型自動車競走施行者協議会（全動協）によりオート施行者の意見が取りまとめられた。<br><b>【結論】</b>協賛は困難<br><b>【理由】</b>売上は上昇傾向にあるものの、一般会計に繰り出せているのは伊勢崎と浜松のみ。本来果たすべきことが果たせていない中での協賛は困難。<br>ただし、オートレースとしての補助事業であれば検討可能であることが確認され、以降は補助事業枠で検討を進めることとなった。</td>
+          <td class="warn"><b>【協賛オートレースの過去実績】</b><br>①沖縄海洋博（S50）S49・50年度 7施行者 70日 6.34億円<br>②筑波科学博（S60）S57〜60年度 8施行者 169日 13.68億円<br>③大阪花と緑の博覧会（H2）S63〜H2年度 8施行者 36日 3.16億円<br>④広島アジア競技大会（H6）H4〜6年度 8施行者 60日 5.00億円<br>⑤阪神・淡路復興支援（H7）H7・8年度 川口のみ 10日 7.20億円（別途H7年度に支援として7施行者・44日・830万円）<br>⑥長野冬季五輪（H9）H9年度 川口のみ 5日 1.89億円<br>※⑤内訳：H7協賛は収益の3/4、同年度支援は収益の1％、H8協賛は収益の1/2を拠出<br><b>【他競技】</b>●ボート：本件2年前に協賛辞退の経緯あり ●地方競馬：要請なし</td>
+        </tr>
+        <tr>
+          <td class="no">3</td><td class="timing">2022/04/28</td><td>競輪最高会議での支援要請（経済産業省車両室 → 業界）</td>
+          <td>・「少なくとも100億円以上の支援」を要請<br>・日本選手権最終日に、博覧会協会から三団体へ協力を依頼するセレモニーを実施。</td>
+          <td class="warn">※2005年愛知万博の実績：協賛競輪8.9億円、JKA補助114億円</td>
+        </tr>
+        <tr>
+          <td class="no">4</td><td class="timing">2022/05/08</td><td>博覧会協会会長からの要請文書（十倉会長 → 笹部会長）</td>
+          <td>協賛競輪と補助事業による、100億円を超える資金的支援の要請。</td>
+          <td class="warn"></td>
+        </tr>
+        <tr>
+          <td class="no">5</td><td class="timing">2022/08/10</td><td>2025年度までの大阪・関西万博協賛競輪を決定（競輪最高会議）</td>
+          <td>総額30億円を拠出する万博協賛競輪の実施を決定。</td>
+          <td class="warn"></td>
+        </tr>
+        <tr>
+          <td class="no">6</td><td class="timing">2022年度通年</td><td>協賛競輪30億円を除く70億円の充足策を調整</td>
+          <td>支援総額100億円のうち、協賛競輪30億円を除く70億円の充足策について、JKAと経済産業省車両室の間で調整が進行。結果として、広報事業費から60億円、補助事業費から10億円を拠出することで調整がついた。</td>
+          <td class="warn"><b>【広報事業費】</b>2023年度予算として20億円を計上。2024・2025年度は各年度、特定費用準備資金から20億円を拠出。<br>※拠出を可能とした要因は、コロナ禍を背景とした売上の急上昇。原資は主として決算の剰余金。（2021年度 9,640億円 → 2022年度 1兆900億円 → 2023年度 1兆1,900億円）<br><b>【補助事業費】</b>機械振興事業に「万博への支援」（1本1.5億円・補助率2/3）を追加。2023〜2025年度で各年度3億円、計9億円（うちオート1.5億円）を交付。残る1億円は2020〜2022年度に交付済み。</td>
+        </tr>
+        <tr>
+          <td class="no">7</td><td class="timing">2023/05/25</td><td>第18回産構審で売上目標の上方修正・追加方針を報告</td>
+          <td>売上目標の上方修正（1兆円 → 1.25兆円）と追加方針が報告された。<br>「中期基本方針策定後の環境変化等を踏まえた新たな取り組み（追加方針）」として、万博への支援を通じ競輪および補助事業の認知拡大・イメージアップを図る、と位置づけ。</td>
+          <td class="warn">産構審に先立ち、第147回競輪最高会議（2023年3月30日）で決定された。</td>
+        </tr>
+        <tr>
+          <td class="no">8</td><td class="timing">2023/07/05</td><td>万博推進PJが発足</td>
+          <td>博覧会協会から「1か月間・650㎡の会場（ギャラリーWEST）」の利用提案があり、催事の実施に向けてJKA内にプロジェクトを設置（PJ長：中村司）。四半期ごとに理事会で報告を行うこととした。</td>
+          <td class="warn">当初計画の予算総額 7.5億円（2024〜2025年度）：丹青社（催事）7億円、電通（PR）0.3億円 ほか。※最終的な執行ベースの金額は「6. 費用・予算」を参照</td>
+        </tr>
+        <tr>
+          <td class="no">9</td><td class="timing">2023/07/06</td><td>協賛メニュー（60億円の対価）の調整と契約締結</td>
+          <td>1口15億円のプラチナパートナー枠を用い、3メニュー（計60億円）について、名称表示権・会場露出・催事実施等を対価とする協賛特典を調整。JKA⇔博覧会協会間で契約を締結。</td>
+          <td class="warn">①開催前からの情報提供 ➡「プロモーション協賛」15億円<br>②理解深化・満足度向上の施設等 ➡「運営参加協賛」30億円<br>③催事による魅力向上・リピート拡散 ➡「催事参加協賛」15億円<br>※①②の会場内露出範囲は対角線で合計80mとなるよう調整。入口の金属探知機や会場内テーブル等を中心に配分。</td>
+        </tr>
+        <tr>
+          <td class="no">10</td><td class="timing">2024/05/01</td><td>追加協賛要請（10億円）</td>
+          <td>万博のコスト増や資金調達の不調が報道される中、2024年初頭に車両室から「万博追加支援（20億円）」の打診。JKAは養成所改修費用が当初想定の3倍・180億円となる見通しから追加協賛は困難と調整していたが、最終的に木戸会長の判断により「10億円」の協賛として車両室と調整。5月に博覧会協会から10億円の追加協賛要望書が発出された。同文書には「追加支援依頼は今回限り」との文言を盛り込む形で調整。追加協賛分の対価は催事期間中の露出範囲の拡大とした。<br>なお、追加契約の原資は2025年度予算からの支出となったため、契約日は2025年4月1日となった。</td>
+          <td class="warn">調整の過程で事務方は「20億円でやむなし」との方向に傾き、試算まで完了していたが、最終的には会長のトップ判断により追加支援は10億円となった。</td>
+        </tr>
+        <tr>
+          <td class="no">11</td><td class="timing">2025/8/1〜8/29</td><td>催事の実施</td>
+          <td>万博における当財団の催事は「ふとももEXPO」として開催。<br>・8月1日〜　メタバース空間でのネット催事「バーチャル万博」<br>・8月8日〜8月29日（約3週間）　会場内ギャラリーWESTでのリアル催事<br>リアル催事会場では、補助事業のPR、イマーシブシアター、ライド体験スペースを設置し、会期中の来場者数は41,721人であった。</td>
+          <td class="warn">詳細は「万博推進プロジェクト最終報告資料」を参照</td>
+        </tr>
+        <tr>
+          <td class="no">12</td><td class="timing">2025/08/06</td><td>再追加支援要請（16.5億円）</td>
+          <td>車両室を経由して再追加支援の打診があり、その後、博覧会協会企画局長・河本氏より、河瀨直美氏（映画監督）プロデュースのパビリオンを会期終了後にレガシーとして移設したいため、同案件に16.5億円を支援してほしい旨の要請があった。<br>追加支援（10億円）の際に「支援は今回限り」とする文書を取り交わしている旨を説明し、丁重にお断りする形で決着した。</td>
+          <td class="warn">車両室からは「どうしても」という趣旨ではなく、JKAが必要性を検討したうえでフラットに判断してよい、との申し添えがあった。</td>
+        </tr>
+        <tr>
+          <td class="no">13</td><td class="timing">2025/10/17</td><td>最終報告・PJ解散</td>
+          <td>理事会において万博推進プロジェクトの最終報告を実施。これをもってプロジェクトは解散となった。<br>木戸会長および松川専務の計らいにより、PJメンバーを集めた慰労の食事会が開催された。</td>
+          <td class="warn">PJメンバーに対する報奨金等の金品の支給は行っていない。</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 5 ============ -->
+<section id="s5">
+  <div class="sec-head"><span class="sec-num">5.</span><h2>知見・ノウハウ（暗黙知）</h2><span class="sec-note">★ここが最重要</span></div>
+  <div class="sec-body" style="padding:0;border:none">
+  <div class="knowhow">
+    <div class="knowhow-lead">─ マニュアルに書かれない実務の勘所 ─</div>
+
+    <div class="kh-item">
+      <div><div class="kh-tag">01 ／ 折衝</div><div class="kh-title">経済産業省車両室・博覧会協会・関係団体との折衝</div></div>
+      <div class="kh-body">
+        <p>折衝窓口は経営企画部が担うことが前提。車両室に対しては、予算編成等の定点で売上状況・財務状況を報告し、当財団の「お財布事情」を平時から理解してもらうことが肝要。<br>全輪協とは費用負担の押し付け合いになる傾向があるが、万博については協賛競輪分とその他の分担で大きなもめ事にはならなかった。<br>ただし、全輪協とは競技実施委託料やVIS利用料等で綱引きになりやすいため、時勢に応じた慎重な対応が必要。</p>
+        <div class="handoff">・窓口機能は経営企画部に集約する前提で運用する<br>・車両室への財務情報の定点報告を継続する<br>・全輪協との費用分担案件は、論点を整理してから折衝に臨む</div>
+      </div>
+    </div>
+
+    <div class="kh-item">
+      <div><div class="kh-tag">02 ／ 費用の捻出</div><div class="kh-title">管理会計・制度会計上のポイント</div></div>
+      <div class="kh-body">
+        <p><b>【管理会計】</b>売上状況と他の資金需要を勘案しつつ、「財団の安定運営」を最優先に役員が意思決定できる材料をそろえること。当時はコロナ禍で売上が伸長した時期（1.1兆〜1.2兆円規模）であったが、売上が1兆円まで減少しても問題なく運営できることを前提に万博支援の試算を行っていた。大型の資金需要がある場合には、可能な限り資産の取り崩しは避け、予算編成の段階から剰余金を出す前提で予算設計することが重要。<br><b>【制度会計】</b>競輪関係業務運営基金など「二度と積み増せない財産」には手をつけず、あくまで予算上で処理できる範囲にとどめること。決算で剰余金を特定資産に積む形で複数年の計画を立てるのがポイント。</p>
+        <div class="handoff">・大型支援の要請時は、①予算段階で剰余金を織り込めるか、②基金等の取り崩しを回避できるか、の2点をまず確認する<br>・売上が1兆円まで減少したケースでの耐性を示せる試算を用意する</div>
+      </div>
+    </div>
+
+  </div>
+  </div>
+</section>
+
+<!-- ============ 6 ============ -->
+<section id="s6">
+  <div class="sec-head"><span class="sec-num">6.</span><h2>費用・予算</h2></div>
+  <div class="sec-body">
+    <div class="kv">
+      <div class="k">費用の目安</div>
+      <div class="v"><b>■支援費用　合計 80億円（JKA負担）</b><br>　協賛費用　60億円／追加協賛費用　10億円／補助事業支援　10億円<br>　※上記とは別に、施行者から協賛競輪を通じた30億円の支援（業界計110億円）<br><br><b>■催事費用　合計 7.6億円</b><br>　2024年度予算　3.2億円／2025年度予算　4.4億円</div>
+      <div class="k">決済方法・精算フロー</div>
+      <div class="v">契約書の締結ごとにコラボフローで決裁</div>
+      <div class="k">予算科目・申請方法</div>
+      <div class="v">・協賛費用　　　　広報事業費<br>・補助事業支援　　補助事業費<br>・催事費用　　　　2024年度：調査研究費／2025年度：広報事業費</div>
+    </div>
+  </div>
+</section>
+
+<!-- ============ 7 ============ -->
+<section id="s7">
+  <div class="sec-head"><span class="sec-num">7.</span><h2>次回への申し送り・未決事項</h2><span class="sec-note">★毎回更新すること</span></div>
+  <div class="sec-body">
+    <table>
+      <thead><tr><th>No</th><th>項目</th><th>内容・現状</th><th>ステータス</th><th>期限・次アクション</th></tr></thead>
+      <tbody>
+        <tr>
+          <td class="no">1</td><td>今後の大型国際イベント</td>
+          <td>2026年アジア競技大会・アジアパラ競技大会（愛知・名古屋）<br>JKAとしては補助事業により総額3.5億円の支援を予定。このほか、施行者による協賛競輪で3億円程度の支援を決定済み。<br>■2024年4月　支援要望伝達式を実施（大会事務総長、JKA会長、全輪協理事長、選手会理事長が出席）<br>■2024年6月　競輪最高会議で協賛競輪による3億円程度の支援を決定<br>■2025年度　JKA補助事業で1億円を支援<br>■2026年度　JKA補助事業で2.5億円を支援予定　※発表前につき取扱注意</td>
+          <td><span class="st cont">継続</span></td><td></td>
+        </tr>
+        <tr>
+          <td class="no">2</td><td>今後の大型国際イベント</td>
+          <td>2027年国際園芸博覧会（GREEN×EXPO 2027／横浜）<br>JKAへの支援依頼は特段なし。ただし、JRAやボートレースには打診が入っている模様で、経営企画部の窓口には「大阪・関西万博でどのように対応したか」との照会が数件寄せられている。</td>
+          <td><span class="st check">要注視</span></td><td></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<!-- ============ 8 ============ -->
+<section id="s8">
+  <div class="sec-head"><span class="sec-num">8.</span><h2>更新履歴</h2></div>
+  <div class="sec-body">
+    <table>
+      <thead><tr><th>日付</th><th>記入者</th><th>更新内容</th></tr></thead>
+      <tbody>
+        <tr><td class="timing">2026/07/24</td><td>白石</td><td>初回作成</td></tr>
+        <tr><td class="timing">2026/07/27</td><td>白石</td><td>全文の表記統一・誤記修正・時系列の整序（校正後シート作成）</td></tr>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<div class="footer-note">
+  <span>JKA 知見継承データベース｜経営企画部 テンプレート v1.1</span>
+  <span>本シートは Excel「業務知見シート」8項目構成に準拠</span>
+</div>
+
+</div>
+
+<script>
+let snapshot = null;
+const EDITABLE = '.kv .v, tbody td:not(.no), .kh-body p, .kh-body .handoff, .org-card .name';
+
+function startEdit(){
+  snapshot = document.querySelector('.wrap').innerHTML;
+  document.body.classList.add('editing');
+  document.querySelectorAll(EDITABLE).forEach(el => el.setAttribute('contenteditable','true'));
+  document.getElementById('btnArea').innerHTML =
+    '<button class="btn ghost" onclick="cancelEdit()">キャンセル</button>' +
+    '<button class="btn gold" onclick="saveEdit()">変更を保存</button>';
+}
+function cancelEdit(){
+  if(snapshot !== null){ document.querySelector('.wrap').innerHTML = snapshot; }
+  exitEditMode();
+}
+function exitEditMode(){
+  document.body.classList.remove('editing');
+  document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+  document.getElementById('btnArea').innerHTML =
+    '<button class="btn gold" id="btnEdit" onclick="startEdit()">更新</button>';
+}
+function today(){
+  const d = new Date();
+  return d.getFullYear() + '/' + String(d.getMonth()+1).padStart(2,'0') + '/' + String(d.getDate()).padStart(2,'0');
+}
+function saveEdit(){
+  const author = prompt('記入者名を入力してください', '');
+  if(author === null){ return; }
+  const note = prompt('更新内容を一言で入力してください', '');
+  if(note === null){ return; }
+  const histBody = document.querySelector('#s8 tbody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td class="timing">' + today() + '</td><td>' + escapeHtml(author || '（未記入）') +
+                 '</td><td>' + escapeHtml(note || '（未記入）') + '</td>';
+  histBody.appendChild(tr);
+  document.querySelectorAll('.kv').forEach(kv => {
+    kv.querySelectorAll('.k').forEach(k => {
+      if(k.textContent.trim() === '最終更新日'){ k.nextElementSibling.textContent = today(); }
+    });
+  });
+  const infoDate = document.getElementById('lastUpdated');
+  if(infoDate){ infoDate.textContent = today().replaceAll('/','-'); }
+  exitEditMode();
+  saveToServer();
+}
+function escapeHtml(s){
+  return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+function saveToServer(){
+  const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+  const blob = new Blob([html], {type:'text/html;charset=utf-8'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = '知見継承シート_04_万博.html';
+  a.click();
+  URL.revokeObjectURL(a.href);
+  alert('更新後のHTMLをダウンロードしました。\nGドライブの原本ファイルに上書き保存してください。');
+}
+</script>
+</body>
+</html>
